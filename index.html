@@ -2,2440 +2,1119 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>AdultStars</title>
-
 <style>
-*{
-    box-sizing:border-box;
-}
-
-body{
-    margin:0;
-    font-family:Arial,Helvetica,sans-serif;
-    background:#111;
-    color:#eee;
-}
-
-button,input,textarea,select{
-    font:inherit;
-}
-
-button{
-    cursor:pointer;
-}
-
-.header{
-    position:sticky;
-    top:0;
-    z-index:20;
-    background:#181818;
-    border-bottom:1px solid #292929;
-    padding:12px;
-}
-
-.header-inner{
-    max-width:1200px;
-    margin:auto;
-    display:flex;
-    gap:10px;
-    align-items:center;
-}
-
-.logo{
-    font-size:22px;
-    font-weight:bold;
-    color:#ff8a00;
-    white-space:nowrap;
-}
-
-.search{
-    flex:1;
-    min-width:100px;
-}
-
-input,textarea,select{
-    width:100%;
-    background:#202020;
-    border:1px solid #383838;
-    color:#fff;
-    border-radius:10px;
-    padding:11px;
-    outline:none;
-}
-
-textarea{
-    min-height:100px;
-    resize:vertical;
-}
-
-input:focus,
-textarea:focus,
-select:focus{
-    border-color:#ff8a00;
-}
-
-.btn{
-    border:1px solid #383838;
-    background:#222;
-    color:#eee;
-    border-radius:10px;
-    padding:10px 13px;
-}
-
-.btn:hover{
-    background:#2d2d2d;
-}
-
-.btn.orange{
-    background:#ff7a00;
-    border-color:#ff7a00;
-    color:#111;
-    font-weight:bold;
-}
-
-.btn.danger{
-    background:#681f1f;
-    border-color:#8d2929;
-}
-
-.btn.green{
-    background:#1f6337;
-    border-color:#2d824b;
-}
-
-.container{
-    max-width:1200px;
-    margin:auto;
-    padding:15px;
-    padding-bottom:90px;
-}
-
-.tabs{
-    max-width:1200px;
-    margin:auto;
-    padding:10px 15px;
-    display:flex;
-    gap:7px;
-    overflow-x:auto;
-    scrollbar-width:none;
-}
-
-.tabs::-webkit-scrollbar{
-    display:none;
-}
-
-.tab{
-    flex:0 0 auto;
-    border:1px solid #333;
-    background:#1c1c1c;
-    color:#aaa;
-    border-radius:10px;
-    padding:9px 12px;
-}
-
-.tab.active{
-    background:#ff7a00;
-    color:#111;
-    border-color:#ff7a00;
-    font-weight:bold;
-}
-
-.section{
-    background:#181818;
-    border:1px solid #292929;
-    border-radius:15px;
-    padding:15px;
-    margin-bottom:15px;
-}
-
-h1,h2,h3{
-    margin-top:0;
-}
-
-.muted{
-    color:#888;
-}
-
-.grid{
-    display:grid;
-    grid-template-columns:repeat(auto-fill,minmax(250px,1fr));
-    gap:12px;
-}
-
-.card{
-    background:#1b1b1b;
-    border:1px solid #303030;
-    border-radius:14px;
-    overflow:hidden;
-}
-
-.card-photo{
-    width:100%;
-    height:280px;
-    object-fit:cover;
-    background:#242424;
-    display:block;
-}
-
-.no-photo{
-    height:280px;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    color:#666;
-    font-size:50px;
-    background:#222;
-}
-
-.card-body{
-    padding:12px;
-}
-
-.card-title{
-    font-size:18px;
-    font-weight:bold;
-}
-
-.card-sub{
-    color:#999;
-    margin-top:4px;
-}
-
-.tags{
-    display:flex;
-    flex-wrap:wrap;
-    gap:5px;
-    margin-top:9px;
-}
-
-.tag{
-    background:#292929;
-    color:#bbb;
-    padding:4px 7px;
-    border-radius:7px;
-    font-size:12px;
-}
-
-.actions{
-    display:flex;
-    flex-wrap:wrap;
-    gap:7px;
-    margin-top:10px;
-}
-
-.form-grid{
-    display:grid;
-    grid-template-columns:repeat(2,1fr);
-    gap:10px;
-}
-
-.form-full{
-    grid-column:1/-1;
-}
-
-.row{
-    display:flex;
-    gap:8px;
-    align-items:center;
-}
-
-.chat-box{
-    height:480px;
-    overflow-y:auto;
-    background:#111;
-    border:1px solid #303030;
-    border-radius:12px;
-    padding:12px;
-}
-
-.message{
-    margin-bottom:10px;
-    padding:9px 11px;
-    background:#202020;
-    border-radius:11px;
-}
-
-.message-name{
-    color:#ff9b35;
-    font-weight:bold;
-    margin-bottom:3px;
-}
-
-.message-time{
-    color:#666;
-    font-size:11px;
-    margin-top:4px;
-}
-
-.chat-input{
-    display:flex;
-    gap:8px;
-    margin-top:10px;
-}
-
-.chat-input input{
-    flex:1;
-}
-
-.dict-item{
-    padding:11px;
-    border:1px solid #303030;
-    border-radius:10px;
-    background:#202020;
-    margin-bottom:8px;
-}
-
-.viewer-frame{
-    width:100%;
-    height:620px;
-    border:1px solid #333;
-    border-radius:14px;
-    background:#fff;
-}
-
-.history-item{
-    display:flex;
-    gap:8px;
-    align-items:center;
-    flex-wrap:wrap;
-    padding:10px;
-    margin-bottom:8px;
-    background:#202020;
-    border:1px solid #303030;
-    border-radius:10px;
-}
-
-.history-url{
-    flex:1;
-    min-width:180px;
-    color:#aaa;
-    word-break:break-all;
-    font-size:13px;
-}
-
-.profile-view{
-    display:grid;
-    grid-template-columns:320px 1fr;
-    gap:15px;
-}
-
-.profile-big-photo{
-    width:100%;
-    max-height:500px;
-    object-fit:cover;
-    border-radius:14px;
-    background:#222;
-}
-
-.info-line{
-    padding:9px 0;
-    border-bottom:1px solid #292929;
-}
-
-.link-list a{
-    display:block;
-    color:#ff9b35;
-    word-break:break-all;
-    margin:7px 0;
-}
-
-.empty{
-    text-align:center;
-    color:#777;
-    padding:30px;
-}
-
-.bottom-nav{
-    position:fixed;
-    left:0;
-    right:0;
-    bottom:0;
-    z-index:30;
-    background:#181818;
-    border-top:1px solid #292929;
-    padding:8px;
-    display:flex;
-    justify-content:center;
-    gap:7px;
-}
-
-.bottom-nav .btn{
-    font-size:12px;
-}
-
-@media(max-width:700px){
-
-    .header-inner{
-        flex-wrap:wrap;
-    }
-
-    .logo{
-        width:100%;
-    }
-
-    .form-grid{
-        grid-template-columns:1fr;
-    }
-
-    .form-full{
-        grid-column:auto;
-    }
-
-    .profile-view{
-        grid-template-columns:1fr;
-    }
-
-    .profile-big-photo{
-        max-height:400px;
-    }
-
-    .viewer-frame{
-        height:500px;
-    }
-
-    .bottom-nav{
-        overflow-x:auto;
-        justify-content:flex-start;
-    }
+*{box-sizing:border-box}
+body{margin:0;background:#090909;color:#fff;font-family:Arial,sans-serif}
+button,input,textarea,select{font:inherit}
+button{cursor:pointer}
+header{position:sticky;top:0;z-index:20;background:#111;border-bottom:1px solid #292929;padding:12px}
+.header{max-width:1150px;margin:auto;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.logo{font-size:22px;font-weight:bold;color:#ff7a00}
+.search{flex:1;min-width:180px;background:#1b1b1b;border:1px solid #333;color:#fff;border-radius:11px;padding:11px}
+.btn{border:1px solid #333;background:#191919;color:#ddd;border-radius:10px;padding:9px 12px}
+.btn.orange{background:#ff7a00;color:#111;border-color:#ff7a00;font-weight:bold}
+.btn.red{background:#7d1f1f;color:#fff;border-color:#9d3030}
+.container{max-width:1150px;margin:auto;padding:18px 14px 100px}
+.tabs{display:flex;gap:7px;overflow:auto;margin-bottom:18px}
+.tab{white-space:nowrap;background:#151515;color:#aaa;border:1px solid #333;border-radius:10px;padding:9px 13px}
+.tab.active{background:#ff7a00;color:#111;border-color:#ff7a00}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:14px}
+.card{background:#141414;border:1px solid #292929;border-radius:16px;overflow:hidden}
+.card:hover{border-color:#ff7a00}
+.photo{height:250px;width:100%;object-fit:cover;background:#222}
+.cardbody{padding:13px}
+.name{font-size:18px;font-weight:bold}
+.ru{font-size:12px;color:#999;margin-top:3px}
+.meta{font-size:12px;color:#888;margin-top:8px}
+.cardbuttons{display:flex;gap:7px;margin-top:12px}
+.cardbuttons>*{flex:1}
+.empty{text-align:center;color:#777;padding:50px 15px}
+.modalbg{display:none;position:fixed;inset:0;background:#000c;z-index:100;overflow:auto;padding:20px}
+.modalbg.show{display:block}
+.modal{max-width:760px;margin:20px auto;background:#141414;border:1px solid #333;border-radius:18px;padding:20px}
+.modal h2{color:#ff7a00;margin-top:0}
+.formgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.field{margin-bottom:12px}
+.field.full{grid-column:1/-1}
+label{display:block;font-size:13px;color:#aaa;margin-bottom:5px}
+input,textarea,select{width:100%;background:#0d0d0d;color:#fff;border:1px solid #333;border-radius:10px;padding:10px}
+textarea{min-height:90px;resize:vertical}
+.modalactions{display:flex;justify-content:flex-end;gap:8px;flex-wrap:wrap;margin-top:15px}
+.profiletop{display:flex;gap:18px}
+.profilephoto{width:190px;height:230px;object-fit:cover;background:#222;border-radius:14px}
+.profileinfo{flex:1}
+.bigname{font-size:28px;font-weight:bold}
+.section{margin-top:18px;background:#101010;border:1px solid #292929;border-radius:14px;padding:15px}
+.section h3{color:#ff7a00;margin-top:0}
+.tags{display:flex;gap:6px;flex-wrap:wrap}
+.tag{background:#222;color:#aaa;padding:5px 8px;border-radius:20px;font-size:12px}
+.links a{display:block;color:#ff963d;margin:8px 0;word-break:break-all}
+.chat{max-width:800px;margin:auto}
+.chatwindow{height:480px;overflow:auto;background:#101010;border:1px solid #292929;border-radius:15px;padding:12px}
+.msg{max-width:80%;padding:10px 13px;border-radius:14px;margin:8px 0;line-height:1.4}
+.msg.user{margin-left:auto;background:#ff7a00;color:#111}
+.msg.bot{background:#222}
+.chatinput{display:flex;gap:8px;margin-top:9px}
+.chatinput input{flex:1}
+.setting{display:flex;align-items:center;justify-content:space-between;background:#181818;border:1px solid #292929;border-radius:11px;padding:10px;margin:7px 0}
+.switch{width:auto}
+.deleted{opacity:.85}
+.bottom{position:fixed;bottom:0;left:0;right:0;z-index:30;background:#111;border-top:1px solid #292929;padding:8px;display:flex;justify-content:center;gap:7px}
+@media(max-width:650px){
+ .formgrid{grid-template-columns:1fr}
+ .field.full{grid-column:auto}
+ .profiletop{flex-direction:column}
+ .profilephoto{width:100%;height:300px}
+ .chatwindow{height:420px}
 }
 </style>
 </head>
 
 <body>
 
-<header class="header">
-    <div class="header-inner">
-        <div class="logo">AdultStars</div>
-
-        <div class="search">
-            <input
-                id="searchInput"
-                placeholder="Поиск анкет..."
-                oninput="renderProfiles()">
-        </div>
-
-        <button class="btn" onclick="randomProfile()">🎲</button>
-    </div>
+<header>
+<div class="header">
+<div class="logo">AdultStars</div>
+<input id="search" class="search" placeholder="Поиск анкеты..." oninput="render()">
+<button class="btn orange" onclick="randomProfile()">🎲</button>
+</div>
 </header>
 
-<nav class="tabs">
+<div class="container">
 
-    <button class="tab active"
-            id="tProfiles"
-            onclick="page('profiles')">
-        👤 Анкеты
-    </button>
+<div class="tabs">
+<button class="tab active" id="tProfiles" onclick="page('profiles')">👤 Анкеты</button>
+<button class="tab" id="tChat" onclick="page('chat')">💬 Общий чат</button>
+<button class="tab" id="tDict" onclick="page('dict')">📖 Общий словарь</button>
+<button class="tab" id="tDeleted" onclick="page('deleted')">🗑️ Удалённые</button>
+<button class="tab" id="tSettings" onclick="page('settings')">⚙️ Настройки</button>
+</div>
 
-    <button class="tab"
-            id="tChat"
-            onclick="page('chat')">
-        💬 Общий чат
-    </button>
-
-    <button class="tab"
-            id="tDict"
-            onclick="page('dict')">
-        📖 Словарь
-    </button>
-
-    <button class="tab"
-            id="tLink"
-            onclick="page('link')">
-        🔗 По ссылке
-    </button>
-
-    <button class="tab"
-            id="tDeleted"
-            onclick="page('deleted')">
-        🗑️ Удалённые
-    </button>
-
-    <button class="tab"
-            id="tSettings"
-            onclick="page('settings')">
-        ⚙️ Настройки
-    </button>
-
-</nav>
-
-<main class="container">
-
-<!-- ================= АНКЕТЫ ================= -->
-
+<!-- АНКЕТЫ -->
 <section id="profilesPage">
 
-    <div class="section">
-        <div class="actions">
-            <button class="btn orange"
-                    onclick="newProfile()">
-                ➕ Новая анкета
-            </button>
+<div class="actions">
+<button class="btn orange" onclick="openEditor()">➕ Новая анкета</button>
+<button class="btn" onclick="showFav()">⭐ Избранное</button>
+<button class="btn" onclick="showAll()">Все</button>
+</div>
 
-            <button class="btn"
-                    onclick="showFavorites()">
-                ⭐ Избранное
-            </button>
+<div id="grid" class="grid"></div>
+</section>
 
-            <button class="btn"
-                    onclick="showAllProfiles()">
-                👥 Все
-            </button>
-        </div>
-    </div>
+<!-- ЧАТ -->
+<section id="chatPage" style="display:none">
+<div class="chat">
 
-    <div id="profileEditor"
-         class="section"
-         style="display:none">
+<div class="section">
+<h2 style="margin-top:0">💬 Общий чат</h2>
+<div style="color:#888">
+Один чат доступен для всех карточек. Общий словарь используется всеми анкетами.
+</div>
+</div>
 
-        <h2 id="editorTitle">Новая анкета</h2>
+<div id="chatWindow" class="chatwindow"></div>
 
-        <div class="form-grid">
+<div class="chatinput">
+<input id="chatInput" placeholder="Напиши сообщение..." onkeydown="if(event.key==='Enter')send()">
+<button class="btn orange" onclick="send()">Отправить</button>
+</div>
 
-            <div>
-                <label>Имя оригинала</label>
-                <input id="pOriginal">
-            </div>
+</div>
+</section>
 
-            <div>
-                <label>Русское имя</label>
-                <input id="pRussian">
-            </div>
+<!-- СЛОВАРЬ -->
+<section id="dictPage" style="display:none">
 
-            <div>
-                <label>Страна</label>
-                <input id="pCountry">
-            </div>
+<div class="actions">
+<button class="btn orange" onclick="openDict()">➕ Добавить фразу</button>
+<button class="btn" onclick="restoreDict()">↩ Встроенный словарь</button>
+</div>
 
-            <div>
-                <label>Дата / год</label>
-                <input id="pDate">
-            </div>
-
-            <div class="form-full">
-                <label>Описание</label>
-                <textarea id="pDescription"></textarea>
-            </div>
-
-            <div class="form-full">
-                <label>Теги через запятую</label>
-                <input id="pTags">
-            </div>
-
-            <div class="form-full">
-                <label>Фото URL</label>
-                <input id="pPhoto"
-                       placeholder="https://...">
-            </div>
-
-            <div class="form-full">
-                <label>Видео — по одному URL на строку</label>
-                <textarea id="pVideos"
-                          placeholder="https://..."></textarea>
-            </div>
-
-            <div class="form-full">
-                <label>Сайты / ссылки — по одной на строку</label>
-                <textarea id="pWebsites"
-                          placeholder="https://..."></textarea>
-            </div>
-
-        </div>
-
-        <div class="actions">
-            <button class="btn orange"
-                    onclick="saveProfile()">
-                💾 Сохранить
-            </button>
-
-            <button class="btn"
-                    onclick="cancelEditor()">
-                Отмена
-            </button>
-        </div>
-
-    </div>
-
-    <div id="profileView"
-         class="section"
-         style="display:none"></div>
-
-    <div id="profilesList"></div>
+<div class="section">
+<h2>📖 Общий словарь</h2>
+<p style="color:#888">
+Все добавленные здесь фразы работают в чатах всех анкет.
+</p>
+<div id="dictList"></div>
+</div>
 
 </section>
 
+<!-- УДАЛЁННЫЕ -->
+<section id="deletedPage" style="display:none">
 
-<!-- ================= ОБЩИЙ ЧАТ ================= -->
+<div class="actions">
+<button class="btn" onclick="page('profiles')">← Вернуться к анкетам</button>
+</div>
 
-<section id="chatPage"
-         style="display:none">
-
-    <div class="section">
-
-        <h2>💬 Общий чат</h2>
-
-        <p class="muted">
-            Общий чат для всех анкет.
-        </p>
-
-        <div id="chatBox"
-             class="chat-box"></div>
-
-        <div class="chat-input">
-
-            <input id="chatInput"
-                   placeholder="Напиши сообщение..."
-                   onkeydown="if(event.key==='Enter')sendChat()">
-
-            <button class="btn orange"
-                    onclick="sendChat()">
-                Отправить
-            </button>
-
-        </div>
-
-    </div>
+<div class="section">
+<h2>🗑️ Удалённые анкеты</h2>
+<p style="color:#888">
+Здесь карточки можно восстановить или удалить окончательно.
+</p>
+<div id="deletedList"></div>
+</div>
 
 </section>
 
+<!-- НАСТРОЙКИ -->
+<section id="settingsPage" style="display:none">
 
-<!-- ================= СЛОВАРЬ ================= -->
+<div class="section">
+<h2>⚙️ Настройки озвучки</h2>
 
-<section id="dictPage"
-         style="display:none">
+<div class="setting">
+<span>🔊 Озвучка</span>
+<label>
+<input class="switch" type="checkbox" id="speechEnabled" onchange="saveSettings()">
+ВКЛ
+</label>
+</div>
 
-    <div class="section">
+<div class="setting">
+<span>🗣️ Многоголосый режим</span>
+<label>
+<input class="switch" type="checkbox" id="multiVoice" onchange="saveSettings()">
+ВКЛ
+</label>
+</div>
 
-        <h2>📖 Общий словарь</h2>
+<div class="field">
+<label>Скорость речи</label>
+<input type="range" id="rate" min=".6" max="1.5" step=".1" onchange="saveSettings()">
+</div>
 
-        <div class="form-grid">
+<div class="field">
+<label>Высота голоса</label>
+<input type="range" id="pitch" min=".5" max="1.5" step=".1" onchange="saveSettings()">
+</div>
 
-            <div>
-                <label>Слово / фраза</label>
-                <input id="dictPhrase">
-            </div>
-
-            <div>
-                <label>Перевод / значение</label>
-                <input id="dictMeaning">
-            </div>
-
-        </div>
-
-        <div class="actions">
-
-            <button class="btn orange"
-                    onclick="addDictionaryItem()">
-                ➕ Добавить
-            </button>
-
-        </div>
-
-    </div>
-
-    <div class="section">
-
-        <h3>📚 Фразы</h3>
-
-        <div id="dictionaryList"></div>
-
-    </div>
+<button class="btn orange" onclick="testVoice()">🔊 Проверить озвучку</button>
+</div>
 
 </section>
 
-
-<!-- ================= ПРОСМОТР ПО ССЫЛКЕ ================= -->
-
-<section id="linkPage"
-         style="display:none">
-
-    <div class="section">
-
-        <h2>🔗 Просмотр по ссылке</h2>
-
-        <p class="muted">
-            Вставь HTTP или HTTPS-ссылку. Страница попробует
-            открыться прямо внутри приложения.
-        </p>
-
-        <div class="chat-input">
-
-            <input id="linkInput"
-                   placeholder="https://example.com"
-                   onkeydown="if(event.key==='Enter')openLink()">
-
-            <button class="btn orange"
-                    onclick="openLink()">
-                👁️ Открыть
-            </button>
-
-        </div>
-
-        <div class="actions">
-
-            <button class="btn"
-                    onclick="openExternalLink()">
-                🌐 Открыть отдельно
-            </button>
-
-            <button class="btn"
-                    onclick="clearLink()">
-                🧹 Очистить
-            </button>
-
-        </div>
-
-    </div>
-
-    <div class="section">
-
-        <h3>👁️ Просмотр</h3>
-
-        <div id="linkStatus"
-             class="muted"
-             style="margin-bottom:10px">
-            Ссылка ещё не открыта.
-        </div>
-
-        <iframe
-            id="linkFrame"
-            class="viewer-frame"
-            src="about:blank"
-            referrerpolicy="no-referrer">
-        </iframe>
-
-        <p class="muted"
-           style="font-size:12px;margin-bottom:0">
-            Некоторые сайты запрещают показ внутри iframe.
-            Если окно останется пустым, нажми «Открыть отдельно».
-        </p>
-
-    </div>
-
-    <div class="section">
-
-        <div class="row"
-             style="justify-content:space-between">
-
-            <h3 style="margin:0">
-                🕘 Последние ссылки
-            </h3>
-
-            <button class="btn danger"
-                    onclick="clearLinkHistory()">
-                Очистить историю
-            </button>
-
-        </div>
-
-        <div id="linkHistory"
-             style="margin-top:12px">
-        </div>
-
-    </div>
-
-</section>
-
-
-<!-- ================= УДАЛЁННЫЕ ================= -->
-
-<section id="deletedPage"
-         style="display:none">
-
-    <div class="section">
-
-        <h2>🗑️ Удалённые анкеты</h2>
-
-        <div id="deletedList"></div>
-
-    </div>
-
-</section>
-
-
-<!-- ================= НАСТРОЙКИ ================= -->
-
-<section id="settingsPage"
-         style="display:none">
-
-    <div class="section">
-
-        <h2>⚙️ Настройки</h2>
-
-        <div class="form-grid">
-
-            <div>
-                <label>
-                    <input type="checkbox"
-                           id="speechEnabled"
-                           onchange="saveSettings()"
-                           style="width:auto">
-                    🔊 Озвучка
-                </label>
-            </div>
-
-            <div>
-                <label>
-                    <input type="checkbox"
-                           id="multiVoice"
-                           onchange="saveSettings()"
-                           style="width:auto">
-                    🎙️ Разные голоса
-                </label>
-            </div>
-
-            <div>
-                <label>Скорость речи</label>
-                <input type="range"
-                       id="speechRate"
-                       min="0.5"
-                       max="2"
-                       step="0.1"
-                       onchange="saveSettings()">
-            </div>
-
-            <div>
-                <label>Высота голоса</label>
-                <input type="range"
-                       id="speechPitch"
-                       min="0.5"
-                       max="2"
-                       step="0.1"
-                       onchange="saveSettings()">
-            </div>
-
-        </div>
-
-    </div>
-
-    <div class="section">
-
-        <h3>💾 Данные</h3>
-
-        <div class="actions">
-
-            <button class="btn"
-                    onclick="exportData()">
-                📤 Экспорт
-            </button>
-
-            <button class="btn"
-                    onclick="importData()">
-                📥 Импорт
-            </button>
-
-            <button class="btn danger"
-                    onclick="resetEverything()">
-                🗑️ Сбросить всё
-            </button>
-
-        </div>
-
-    </div>
-
-</section>
-
-</main>
-
-
-<!-- ================= НИЖНЕЕ МЕНЮ ================= -->
-
-<div class="bottom-nav">
-
-    <button class="btn"
-            onclick="page('profiles')">
-        👤 Анкеты
-    </button>
-
-    <button class="btn"
-            onclick="page('chat')">
-        💬 Чат
-    </button>
-
-    <button class="btn"
-            onclick="page('link')">
-        🔗 Ссылка
-    </button>
-
-    <button class="btn"
-            onclick="page('dict')">
-        📖 Словарь
-    </button>
-
+</div>
+
+<div class="bottom">
+<button class="btn" onclick="page('profiles')">👤 Анкеты</button>
+<button class="btn" onclick="page('chat')">💬 Чат</button>
+<button class="btn" onclick="page('dict')">📖 Словарь</button>
+</div>
+
+
+<!-- ПРОФИЛЬ -->
+<div id="profileModal" class="modalbg">
+<div class="modal">
+<div id="profileContent"></div>
+<div class="modalactions">
+<button class="btn" onclick="closeModal('profileModal')">Закрыть</button>
+<button class="btn orange" onclick="editCurrent()">✏️ Редактировать</button>
+</div>
+</div>
+</div>
+
+
+<!-- РЕДАКТОР АНКЕТЫ -->
+<div id="editorModal" class="modalbg">
+<div class="modal">
+
+<h2 id="editorTitle">➕ Новая анкета</h2>
+
+<div class="formgrid">
+
+<div class="field">
+<label>Оригинальное название</label>
+<input id="pName">
+</div>
+
+<div class="field">
+<label>Русское название</label>
+<input id="pRu">
+</div>
+
+<div class="field">
+<label>Страна</label>
+<input id="pCountry">
+</div>
+
+<div class="field">
+<label>Дата / год</label>
+<input id="pDate">
+</div>
+
+<div class="field full">
+<label>Описание</label>
+<textarea id="pDesc"></textarea>
+</div>
+
+<div class="field full">
+<label>Теги через запятую</label>
+<input id="pTags">
+</div>
+
+<div class="field full">
+<label>🖼️ Фото по ссылке</label>
+<input id="pPhotoUrl" placeholder="https://site.com/photo.jpg">
+</div>
+
+<div class="field full">
+<label>🖼️ Или выбрать фото с устройства</label>
+<input id="pPhotoFile" type="file" accept="image/*">
+</div>
+
+<div class="field full">
+<label>🎬 Видео — каждое с новой строки</label>
+<textarea id="pVideos" placeholder="https://example.com/video"></textarea>
+</div>
+
+<div class="field full">
+<label>🌐 Интернет / сайты — каждый с новой строки</label>
+<textarea id="pWebsites" placeholder="https://example.com"></textarea>
+</div>
+
+</div>
+
+<div class="modalactions">
+<button class="btn" onclick="closeModal('editorModal')">Отмена</button>
+<button class="btn red" id="deleteFromEditor" onclick="deleteEditing()">🗑️ Удалить</button>
+<button class="btn orange" onclick="saveProfile()">💾 Сохранить</button>
+</div>
+
+</div>
+</div>
+
+
+<!-- СЛОВАРЬ -->
+<div id="dictModal" class="modalbg">
+<div class="modal">
+
+<h2>📖 Фраза словаря</h2>
+
+<div class="field">
+<label>Фраза пользователя</label>
+<input id="dQuestion" placeholder="например: привет">
+</div>
+
+<div class="field">
+<label>Основной ответ</label>
+<textarea id="dAnswer"></textarea>
+</div>
+
+<div class="field">
+<label>Дополнительные ответы — каждый с новой строки</label>
+<textarea id="dVariants"></textarea>
+</div>
+
+<div class="modalactions">
+<button class="btn" onclick="closeModal('dictModal')">Отмена</button>
+<button class="btn orange" onclick="saveDict()">💾 Сохранить</button>
+</div>
+
+</div>
 </div>
 
 
 <script>
 
-/* =========================================================
-   ДАННЫЕ
-========================================================= */
+/* =========================
+   ОСНОВНЫЕ ДАННЫЕ
+========================= */
 
-let profiles =
-    JSON.parse(localStorage.getItem("as_profiles") || "[]");
+const names=[
+"Abella Danger","Angela White","Ariana Marie","Asa Akira","Autumn Falls",
+"Ava Addams","Briana Banks","Brandi Love","Brooklyn Chase","Carmen Caliente",
+"Casey Calvert","Chanel Preston","Cindy Starfall","Dani Daniels","Emily Willis",
+"Eva Elfie","Gianna Dior","Gina Valentina","Jasmine Sherni","Jenna Haze",
+"Jessa Rhodes","Jessica Rizzo","Jill Kassidy","Julia Ann","Kendra Lust",
+"Kenzie Reeves","Kimmy Granger","Lana Rhoades","Lena Paul","Lexi Luna",
+"Lily Ivy","Mia Malkova","Mia Melano","Molly Little","Monica Bellucci",
+"Mia Khalifa","Nina North","Nicole Aniston","Nikki Benz","Olivia Austin",
+"Piper Perri","Riley Reid","Romi Rain","Sasha Grey","Scarlett Sage",
+"Sky Bri","Sophie Dee","Stoya","Sybil Stallone","Tori Black",
+"Vanna Bardot","Victoria June","Whitney Wright","Wifey"
+];
 
-let deletedProfiles =
-    JSON.parse(localStorage.getItem("as_deleted") || "[]");
+const ru={
+"Abella Danger":"Абелла Дэнджер","Angela White":"Анджела Уайт",
+"Ariana Marie":"Ариана Мари","Asa Akira":"Аса Акира",
+"Autumn Falls":"Отум Фоллс","Ava Addams":"Ава Аддамс",
+"Briana Banks":"Бриана Бэнкс","Brandi Love":"Бренди Лав",
+"Brooklyn Chase":"Бруклин Чейз","Carmen Caliente":"Кармен Калиенте",
+"Casey Calvert":"Кейси Калверт","Chanel Preston":"Шанель Престон",
+"Cindy Starfall":"Синди Старфолл","Dani Daniels":"Дани Дэниэлс",
+"Emily Willis":"Эмили Уиллис","Eva Elfie":"Ева Элфи",
+"Gianna Dior":"Джанна Диор","Gina Valentina":"Джина Валентина",
+"Jasmine Sherni":"Джасмин Шерни","Jenna Haze":"Дженна Хейз",
+"Jessa Rhodes":"Джесса Роудс","Jessica Rizzo":"Джессика Риццо",
+"Jill Kassidy":"Джилл Кэссиди","Julia Ann":"Джулия Энн",
+"Kendra Lust":"Кендра Ласт","Kenzie Reeves":"Кензи Ривз",
+"Kimmy Granger":"Кимми Грейнджер","Lana Rhoades":"Лана Роудс",
+"Lena Paul":"Лена Пол","Lexi Luna":"Лекси Луна",
+"Lily Ivy":"Лили Айви","Mia Malkova":"Миа Малкова",
+"Mia Melano":"Миа Мелано","Molly Little":"Молли Литтл",
+"Monica Bellucci":"Моника Беллуччи","Mia Khalifa":"Миа Халифа",
+"Nina North":"Нина Норт","Nicole Aniston":"Николь Энистон",
+"Nikki Benz":"Никки Бенц","Olivia Austin":"Оливия Остин",
+"Piper Perri":"Пайпер Перри","Riley Reid":"Райли Рид",
+"Romi Rain":"Роми Рэйн","Sasha Grey":"Саша Грей",
+"Scarlett Sage":"Скарлетт Сейдж","Sky Bri":"Скай Бри",
+"Sophie Dee":"Софи Ди","Stoya":"Стойя","Sybil Stallone":"Сибил Сталлоне",
+"Tori Black":"Тори Блэк","Vanna Bardot":"Ванна Бардо",
+"Victoria June":"Виктория Джун","Whitney Wright":"Уитни Райт",
+"Wifey":"Вайфи"
+};
 
-let favorites =
-    JSON.parse(localStorage.getItem("as_fav") || "[]");
+let profiles=JSON.parse(localStorage.getItem("as_profiles")||"{}");
+let deleted=JSON.parse(localStorage.getItem("as_deleted")||"{}");
+let fav=JSON.parse(localStorage.getItem("as_fav")||"[]");
+let dictionary=JSON.parse(localStorage.getItem("as_dict")||"[]");
 
-let dictionary =
-    JSON.parse(localStorage.getItem("as_dict") || "[]");
-
-let chat =
-    JSON.parse(localStorage.getItem("as_chat") || "[]");
-
-let settings =
-    JSON.parse(localStorage.getItem("as_settings") || "{}");
-
-let linkHistory =
-    JSON.parse(localStorage.getItem("as_link_history") || "[]");
-
-let editingId = null;
-let currentProfileId = null;
-let currentViewerUrl = "";
-
-
-/* =========================================================
-   УТИЛИТЫ
-========================================================= */
-
-function esc(value){
-
-    return String(value ?? "")
-        .replace(/&/g,"&amp;")
-        .replace(/</g,"&lt;")
-        .replace(/>/g,"&gt;")
-        .replace(/"/g,"&quot;")
-        .replace(/'/g,"&#039;");
-}
-
-
-function uid(){
-
-    return Date.now().toString(36) +
-           Math.random().toString(36).slice(2);
-}
-
-
-function saveAll(){
-
-    localStorage.setItem(
-        "as_profiles",
-        JSON.stringify(profiles)
-    );
-
-    localStorage.setItem(
-        "as_deleted",
-        JSON.stringify(deletedProfiles)
-    );
-
-    localStorage.setItem(
-        "as_fav",
-        JSON.stringify(favorites)
-    );
-
-    localStorage.setItem(
-        "as_dict",
-        JSON.stringify(dictionary)
-    );
-
-    localStorage.setItem(
-        "as_chat",
-        JSON.stringify(chat)
-    );
-
-    localStorage.setItem(
-        "as_settings",
-        JSON.stringify(settings)
-    );
-
-    localStorage.setItem(
-        "as_link_history",
-        JSON.stringify(linkHistory)
-    );
-}
+let current=null;
+let editing=null;
+let dictEditing=null;
+let favOnly=false;
 
 
-/* =========================================================
-   НАВИГАЦИЯ
-========================================================= */
-
-function page(name){
-
-    const pages = {
-        profiles:"profilesPage",
-        chat:"chatPage",
-        dict:"dictPage",
-        link:"linkPage",
-        deleted:"deletedPage",
-        settings:"settingsPage"
-    };
-
-    const tabs = {
-        profiles:"tProfiles",
-        chat:"tChat",
-        dict:"tDict",
-        link:"tLink",
-        deleted:"tDeleted",
-        settings:"tSettings"
-    };
-
-    Object.values(pages).forEach(id=>{
-        const el=document.getElementById(id);
-        if(el)el.style.display="none";
-    });
-
-    Object.values(tabs).forEach(id=>{
-        const el=document.getElementById(id);
-        if(el)el.classList.remove("active");
-    });
-
-    if(pages[name]){
-        document.getElementById(pages[name]).style.display="block";
-    }
-
-    if(tabs[name]){
-        document.getElementById(tabs[name]).classList.add("active");
-    }
-
-    if(name==="profiles"){
-        renderProfiles();
-    }
-
-    if(name==="chat"){
-        renderChat();
-    }
-
-    if(name==="dict"){
-        renderDictionary();
-    }
-
-    if(name==="link"){
-        renderLinkHistory();
-    }
-
-    if(name==="deleted"){
-        renderDeleted();
-    }
-
-    if(name==="settings"){
-        loadSettings();
-    }
-}
-
-
-/* =========================================================
+/* =========================
    ПРОФИЛИ
-========================================================= */
+========================= */
 
-function newProfile(){
+function blank(name){
+return {
+ name:name||"",
+ ruName:ru[name]||"",
+ country:"—",
+ date:"—",
+ desc:"Профиль пока не заполнен.",
+ tags:[],
+ photo:"",
+ videos:[],
+ websites:[],
+ custom:true
+};
+}
 
-    editingId=null;
+names.forEach(n=>{
+ if(!profiles[n])profiles[n]={
+  ...blank(n),
+  custom:false,
+  desc:"Профиль доступен для редактирования."
+ };
+});
 
-    document.getElementById("editorTitle").textContent=
-        "Новая анкета";
+saveProfiles();
 
-    document.getElementById("pOriginal").value="";
-    document.getElementById("pRussian").value="";
-    document.getElementById("pCountry").value="";
-    document.getElementById("pDate").value="";
-    document.getElementById("pDescription").value="";
-    document.getElementById("pTags").value="";
-    document.getElementById("pPhoto").value="";
-    document.getElementById("pVideos").value="";
-    document.getElementById("pWebsites").value="";
-
-    document.getElementById("profileEditor").style.display="block";
-    document.getElementById("profileView").style.display="none";
-
-    window.scrollTo({
-        top:0,
-        behavior:"smooth"
-    });
+function saveProfiles(){
+localStorage.setItem("as_profiles",JSON.stringify(profiles));
+localStorage.setItem("as_deleted",JSON.stringify(deleted));
+localStorage.setItem("as_fav",JSON.stringify(fav));
 }
 
 
-function cancelEditor(){
+/* =========================
+   ОТОБРАЖЕНИЕ
+========================= */
 
-    document.getElementById("profileEditor").style.display="none";
+function render(){
+
+let q=document.getElementById("search").value.toLowerCase();
+let arr=Object.values(profiles);
+
+if(favOnly)arr=arr.filter(p=>fav.includes(p.name));
+
+arr=arr.filter(p=>
+!q||
+p.name.toLowerCase().includes(q)||
+(p.ruName||"").toLowerCase().includes(q)||
+(p.country||"").toLowerCase().includes(q)
+);
+
+let grid=document.getElementById("grid");
+
+if(!arr.length){
+grid.innerHTML='<div class="empty">Анкет не найдено.</div>';
+return;
 }
 
+grid.innerHTML=arr.map(p=>`
+<div class="card">
+
+${p.photo?
+`<img class="photo" src="${safe(p.photo)}">`:
+`<div class="photo" style="display:flex;align-items:center;justify-content:center;font-size:60px">👤</div>`}
+
+<div class="cardbody">
+
+<div class="name">${esc(p.name)}</div>
+${p.ruName?`<div class="ru">${esc(p.ruName)}</div>`:""}
+
+<div class="meta">${esc(p.country||"—")}</div>
+
+<div class="cardbuttons">
+<button class="btn orange" onclick="openProfile('${attr(p.name)}')">Открыть</button>
+<button class="btn" onclick="toggleFav('${attr(p.name)}')">${fav.includes(p.name)?"★":"☆"}</button>
+</div>
+
+</div>
+</div>
+`).join("");
+}
+
+function showFav(){
+favOnly=true;
+render();
+}
+
+function showAll(){
+favOnly=false;
+render();
+}
+
+function toggleFav(name){
+if(fav.includes(name))fav=fav.filter(x=>x!==name);
+else fav.push(name);
+saveProfiles();
+render();
+}
+
+function randomProfile(){
+let a=Object.keys(profiles);
+if(a.length)openProfile(a[Math.floor(Math.random()*a.length)]);
+}
+
+
+/* =========================
+   ПРОСМОТР ПРОФИЛЯ
+========================= */
+
+function openProfile(name){
+
+current=name;
+let p=profiles[name];
+
+document.getElementById("profileContent").innerHTML=`
+
+<div class="profiletop">
+
+${p.photo?
+`<img class="profilephoto" src="${safe(p.photo)}">`:
+`<div class="profilephoto" style="display:flex;align-items:center;justify-content:center;font-size:70px">👤</div>`}
+
+<div class="profileinfo">
+
+<div class="bigname">${esc(p.name)}</div>
+
+${p.ruName?`<div class="ru">${esc(p.ruName)}</div>`:""}
+
+<p style="color:#aaa">${esc(p.country||"—")}</p>
+
+<p>${esc(p.desc||"")}</p>
+
+<div class="tags">
+${(p.tags||[]).map(x=>`<span class="tag">${esc(x)}</span>`).join("")}
+</div>
+
+</div>
+</div>
+
+<div class="section">
+<h3>Информация</h3>
+<p>Дата / год: ${esc(p.date||"—")}</p>
+</div>
+
+<div class="section">
+<h3>🎬 Видео</h3>
+<div class="links">
+${(p.videos||[]).length?
+p.videos.map(x=>`<a href="${safe(x)}" target="_blank" rel="noopener">${esc(x)}</a>`).join(""):
+"<span style='color:#777'>Видео пока не добавлены.</span>"}
+</div>
+</div>
+
+<div class="section">
+<h3>🌐 Интернет</h3>
+<div class="links">
+${(p.websites||[]).length?
+p.websites.map(x=>`<a href="${safe(x)}" target="_blank" rel="noopener">${esc(x)}</a>`).join(""):
+"<span style='color:#777'>Ссылок пока нет.</span>"}
+</div>
+</div>
+
+<div class="section">
+<h3>💬 Чат</h3>
+<p style="color:#888">Используется общий чат и общий словарь всех анкет.</p>
+<button class="btn orange" onclick="closeModal('profileModal');page('chat')">
+Открыть общий чат
+</button>
+</div>
+`;
+
+document.getElementById("profileModal").classList.add("show");
+}
+
+function editCurrent(){
+closeModal("profileModal");
+openEditor(current);
+}
+
+
+/* =========================
+   РЕДАКТОР
+========================= */
+
+function openEditor(name=null){
+
+editing=name;
+
+let p=name?profiles[name]:blank("");
+
+document.getElementById("editorTitle").textContent=
+name?"✏️ Редактирование анкеты":"➕ Новая анкета";
+
+document.getElementById("pName").value=p.name;
+document.getElementById("pRu").value=p.ruName||"";
+document.getElementById("pCountry").value=p.country||"";
+document.getElementById("pDate").value=p.date||"";
+document.getElementById("pDesc").value=p.desc||"";
+document.getElementById("pTags").value=(p.tags||[]).join(", ");
+document.getElementById("pPhotoUrl").value=
+p.photo&&p.photo.startsWith("http")?p.photo:"";
+document.getElementById("pPhotoFile").value="";
+document.getElementById("pVideos").value=(p.videos||[]).join("\n");
+document.getElementById("pWebsites").value=(p.websites||[]).join("\n");
+
+document.getElementById("deleteFromEditor").style.display=
+name?"inline-block":"none";
+
+document.getElementById("editorModal").classList.add("show");
+}
 
 function saveProfile(){
 
-    const original=
-        document.getElementById("pOriginal").value.trim();
+let name=document.getElementById("pName").value.trim();
 
-    if(!original){
-        alert("Укажи имя.");
-        return;
-    }
+if(!name){
+alert("Укажи название анкеты.");
+return;
+}
 
-    const data={
+if(editing&&name!==editing&&profiles[name]){
+alert("Анкета с таким названием уже существует.");
+return;
+}
 
-        id:editingId || uid(),
+let old=editing?profiles[editing]:blank(name);
 
-        original,
+let photo=document.getElementById("pPhotoUrl").value.trim();
 
-        russian:
-            document.getElementById("pRussian").value.trim(),
+const file=document.getElementById("pPhotoFile").files[0];
 
-        country:
-            document.getElementById("pCountry").value.trim(),
+function finish(filePhoto){
 
-        date:
-            document.getElementById("pDate").value.trim(),
+if(filePhoto)photo=filePhoto;
 
-        description:
-            document.getElementById("pDescription").value.trim(),
+profiles[name]={
+...old,
+name:name,
+ruName:document.getElementById("pRu").value.trim(),
+country:document.getElementById("pCountry").value.trim(),
+date:document.getElementById("pDate").value.trim(),
+desc:document.getElementById("pDesc").value.trim(),
+tags:document.getElementById("pTags").value.split(",").map(x=>x.trim()).filter(Boolean),
+photo:photo,
+videos:lines("pVideos"),
+websites:lines("pWebsites")
+};
 
-        tags:
-            document.getElementById("pTags").value
-                .split(",")
-                .map(x=>x.trim())
-                .filter(Boolean),
+if(editing&&editing!==name){
+delete profiles[editing];
+fav=fav.map(x=>x===editing?name:x);
+}
 
-        photo:
-            document.getElementById("pPhoto").value.trim(),
+saveProfiles();
+closeModal("editorModal");
+render();
+}
 
-        videos:
-            document.getElementById("pVideos").value
-                .split("\n")
-                .map(x=>x.trim())
-                .filter(Boolean),
+if(file){
+let r=new FileReader();
+r.onload=e=>finish(e.target.result);
+r.readAsDataURL(file);
+}else{
+finish("");
+}
+}
 
-        websites:
-            document.getElementById("pWebsites").value
-                .split("\n")
-                .map(x=>x.trim())
-                .filter(Boolean),
+function lines(id){
+return document.getElementById(id).value
+.split("\n").map(x=>x.trim()).filter(Boolean);
+}
 
-        created:
-            Date.now()
-    };
+function deleteEditing(){
 
-    if(editingId){
+if(!editing)return;
 
-        const index=
-            profiles.findIndex(x=>x.id===editingId);
+if(!confirm("Переместить эту анкету в удалённые?"))return;
 
-        if(index!==-1){
-            profiles[index]=data;
-        }
+deleted[editing]=profiles[editing];
+delete profiles[editing];
+fav=fav.filter(x=>x!==editing);
 
-    }else{
-
-        profiles.unshift(data);
-    }
-
-    saveAll();
-
-    document.getElementById("profileEditor").style.display="none";
-
-    renderProfiles();
+saveProfiles();
+closeModal("editorModal");
+render();
 }
 
 
-function editProfile(id){
-
-    const p=
-        profiles.find(x=>x.id===id);
-
-    if(!p)return;
-
-    editingId=id;
-
-    document.getElementById("editorTitle").textContent=
-        "Редактирование анкеты";
-
-    document.getElementById("pOriginal").value=p.original || "";
-    document.getElementById("pRussian").value=p.russian || "";
-    document.getElementById("pCountry").value=p.country || "";
-    document.getElementById("pDate").value=p.date || "";
-    document.getElementById("pDescription").value=p.description || "";
-    document.getElementById("pTags").value=(p.tags || []).join(", ");
-    document.getElementById("pPhoto").value=p.photo || "";
-    document.getElementById("pVideos").value=(p.videos || []).join("\n");
-    document.getElementById("pWebsites").value=(p.websites || []).join("\n");
-
-    document.getElementById("profileEditor").style.display="block";
-
-    window.scrollTo({
-        top:0,
-        behavior:"smooth"
-    });
-}
-
-
-function deleteProfile(id){
-
-    const p=
-        profiles.find(x=>x.id===id);
-
-    if(!p)return;
-
-    if(!confirm("Удалить анкету?"))return;
-
-    profiles=
-        profiles.filter(x=>x.id!==id);
-
-    deletedProfiles.unshift(p);
-
-    favorites=
-        favorites.filter(x=>x!==id);
-
-    saveAll();
-
-    renderProfiles();
-}
-
-
-function toggleFavorite(id){
-
-    if(favorites.includes(id)){
-
-        favorites=
-            favorites.filter(x=>x!==id);
-
-    }else{
-
-        favorites.push(id);
-    }
-
-    saveAll();
-
-    renderProfiles();
-}
-
-
-function renderProfiles(list=profiles){
-
-    const box=
-        document.getElementById("profilesList");
-
-    const query=
-        document.getElementById("searchInput").value
-            .trim()
-            .toLowerCase();
-
-    let arr=list.filter(p=>{
-
-        if(!query)return true;
-
-        const text=[
-            p.original,
-            p.russian,
-            p.country,
-            p.description,
-            ...(p.tags || [])
-        ].join(" ").toLowerCase();
-
-        return text.includes(query);
-    });
-
-    if(!arr.length){
-
-        box.innerHTML=
-            '<div class="section empty">Анкет пока нет.</div>';
-
-        return;
-    }
-
-    box.innerHTML=
-        '<div class="grid">'+
-        arr.map(profileCard).join("")+
-        '</div>';
-}
-
-
-function profileCard(p){
-
-    const fav=
-        favorites.includes(p.id);
-
-    const photo=p.photo
-        ? `<img class="card-photo"
-                src="${esc(p.photo)}"
-                onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
-           <div class="no-photo" style="display:none">👤</div>`
-        : `<div class="no-photo">👤</div>`;
-
-    return `
-
-    <article class="card">
-
-        ${photo}
-
-        <div class="card-body">
-
-            <div class="card-title">
-                ${esc(p.original)}
-            </div>
-
-            <div class="card-sub">
-                ${esc(p.russian || "Русское имя не указано")}
-            </div>
-
-            <div class="card-sub">
-                ${esc(p.country || "Страна не указана")}
-            </div>
-
-            ${
-                p.tags?.length
-                ?
-                `<div class="tags">
-                    ${p.tags.map(t=>`
-                        <span class="tag">
-                            ${esc(t)}
-                        </span>
-                    `).join("")}
-                </div>`
-                :""
-            }
-
-            <div class="actions">
-
-                <button class="btn orange"
-                        onclick="openProfile('${p.id}')">
-                    Открыть
-                </button>
-
-                <button class="btn"
-                        onclick="toggleFavorite('${p.id}')">
-                    ${fav ? "⭐" : "☆"}
-                </button>
-
-                <button class="btn"
-                        onclick="editProfile('${p.id}')">
-                    ✏️
-                </button>
-
-                <button class="btn danger"
-                        onclick="deleteProfile('${p.id}')">
-                    🗑️
-                </button>
-
-            </div>
-
-        </div>
-
-    </article>
-
-    `;
-}
-
-
-function openProfile(id){
-
-    const p=
-        profiles.find(x=>x.id===id);
-
-    if(!p)return;
-
-    currentProfileId=id;
-
-    document.getElementById("profilesList").style.display="none";
-    document.getElementById("profileEditor").style.display="none";
-
-    const view=
-        document.getElementById("profileView");
-
-    view.style.display="block";
-
-    const photo=p.photo
-        ? `<img class="profile-big-photo"
-                src="${esc(p.photo)}"
-                onerror="this.outerHTML='<div class=\\'no-photo\\'>👤</div>'">`
-        : `<div class="no-photo">👤</div>`;
-
-    view.innerHTML=`
-
-        <div class="actions">
-            <button class="btn"
-                    onclick="closeProfile()">
-                ← Назад
-            </button>
-
-            <button class="btn"
-                    onclick="editProfile('${p.id}')">
-                ✏️ Редактировать
-            </button>
-        </div>
-
-        <div class="profile-view"
-             style="margin-top:12px">
-
-            <div>
-                ${photo}
-            </div>
-
-            <div>
-
-                <h2>
-                    ${esc(p.original)}
-                </h2>
-
-                <div class="info-line">
-                    <b>Русское имя:</b>
-                    ${esc(p.russian || "—")}
-                </div>
-
-                <div class="info-line">
-                    <b>Страна:</b>
-                    ${esc(p.country || "—")}
-                </div>
-
-                <div class="info-line">
-                    <b>Дата / год:</b>
-                    ${esc(p.date || "—")}
-                </div>
-
-                <div class="info-line">
-                    <b>Описание:</b><br>
-                    ${esc(p.description || "—")}
-                </div>
-
-                ${
-                    p.tags?.length
-                    ?
-                    `<div class="tags">
-                        ${p.tags.map(t=>`
-                            <span class="tag">
-                                ${esc(t)}
-                            </span>
-                        `).join("")}
-                    </div>`
-                    :""
-                }
-
-                ${
-                    p.videos?.length
-                    ?
-                    `
-                    <div class="section"
-                         style="margin-top:12px">
-
-                        <h3>🎬 Видео</h3>
-
-                        ${p.videos.map(v=>`
-
-                            <div class="actions">
-
-                                <button class="btn orange"
-                                        onclick="openLinkFromProfile('${esc(v)}')">
-                                    ▶️ ${esc(v)}
-                                </button>
-
-                            </div>
-
-                        `).join("")}
-
-                    </div>
-                    `
-                    :""
-                }
-
-                ${
-                    p.websites?.length
-                    ?
-                    `
-                    <div class="section"
-                         style="margin-top:12px">
-
-                        <h3>🌐 Ссылки</h3>
-
-                        <div class="link-list">
-
-                            ${p.websites.map(v=>`
-
-                                <a href="${esc(v)}"
-                                   target="_blank"
-                                   rel="noopener noreferrer">
-                                    ${esc(v)}
-                                </a>
-
-                            `).join("")}
-
-                        </div>
-
-                    </div>
-                    `
-                    :""
-                }
-
-                <div class="actions">
-
-                    <button class="btn"
-                            onclick="page('chat')">
-                        💬 Общий чат
-                    </button>
-
-                    <button class="btn orange"
-                            onclick="speakProfile('${p.id}')">
-                        🔊 Озвучить
-                    </button>
-
-                </div>
-
-            </div>
-
-        </div>
-    `;
-}
-
-
-function closeProfile(){
-
-    document.getElementById("profileView").style.display="none";
-    document.getElementById("profilesList").style.display="block";
-
-    renderProfiles();
-}
-
-
-function showFavorites(){
-
-    const arr=
-        profiles.filter(p=>favorites.includes(p.id));
-
-    renderProfiles(arr);
-}
-
-
-function showAllProfiles(){
-
-    document.getElementById("searchInput").value="";
-
-    renderProfiles(profiles);
-}
-
-
-function randomProfile(){
-
-    if(!profiles.length){
-
-        alert("Анкет пока нет.");
-
-        return;
-    }
-
-    const p=
-        profiles[
-            Math.floor(Math.random()*profiles.length)
-        ];
-
-    openProfile(p.id);
-}
-
-
-/* =========================================================
+/* =========================
    УДАЛЁННЫЕ
-========================================================= */
+========================= */
 
 function renderDeleted(){
 
-    const box=
-        document.getElementById("deletedList");
+let box=document.getElementById("deletedList");
+let arr=Object.values(deleted);
 
-    if(!deletedProfiles.length){
+if(!arr.length){
+box.innerHTML='<div class="empty">Удалённых анкет нет.</div>';
+return;
+}
 
-        box.innerHTML=
-            '<div class="empty">Удалённых анкет нет.</div>';
+box.innerHTML=arr.map(p=>`
+<div class="section deleted">
 
-        return;
-    }
+<h3>${esc(p.name)}</h3>
+<div class="ru">${esc(p.ruName||"")}</div>
 
-    box.innerHTML=
-        deletedProfiles.map(p=>`
+<div class="actions">
+<button class="btn orange" onclick="restoreProfile('${attr(p.name)}')">
+♻️ Восстановить
+</button>
 
-        <div class="history-item">
+<button class="btn red" onclick="deleteForever('${attr(p.name)}')">
+Удалить навсегда
+</button>
+</div>
 
-            <div class="history-url">
+</div>
+`).join("");
+}
 
-                <b>${esc(p.original)}</b>
+function restoreProfile(name){
 
-                ${
-                    p.russian
-                    ? " — "+esc(p.russian)
-                    : ""
-                }
+if(profiles[name]){
+alert("Анкета с таким названием уже существует.");
+return;
+}
 
-            </div>
+profiles[name]=deleted[name];
+delete deleted[name];
 
-            <button class="btn green"
-                    onclick="restoreProfile('${p.id}')">
-                ♻️ Восстановить
-            </button>
+saveProfiles();
+renderDeleted();
+render();
+}
 
-            <button class="btn danger"
-                    onclick="deleteForever('${p.id}')">
-                Удалить навсегда
-            </button>
+function deleteForever(name){
 
-        </div>
+if(!confirm("Удалить анкету навсегда? Восстановить её будет нельзя."))return;
 
-    `).join("");
+delete deleted[name];
+
+saveProfiles();
+renderDeleted();
 }
 
 
-function restoreProfile(id){
-
-    const index=
-        deletedProfiles.findIndex(x=>x.id===id);
-
-    if(index===-1)return;
-
-    profiles.unshift(
-        deletedProfiles[index]
-    );
-
-    deletedProfiles.splice(index,1);
-
-    saveAll();
-
-    renderDeleted();
-}
-
-
-function deleteForever(id){
-
-    if(!confirm("Удалить навсегда?"))return;
-
-    deletedProfiles=
-        deletedProfiles.filter(x=>x.id!==id);
-
-    saveAll();
-
-    renderDeleted();
-}
-
-
-/* =========================================================
-   ЧАТ
-========================================================= */
-
-function renderChat(){
-
-    const box=
-        document.getElementById("chatBox");
-
-    if(!chat.length){
-
-        box.innerHTML=
-            '<div class="empty">Сообщений пока нет.</div>';
-
-        return;
-    }
-
-    box.innerHTML=
-        chat.map(m=>`
-
-        <div class="message">
-
-            <div class="message-name">
-                ${esc(m.name)}
-            </div>
-
-            <div>
-                ${esc(m.text)}
-            </div>
-
-            <div class="message-time">
-                ${esc(m.time)}
-            </div>
-
-        </div>
-
-    `).join("");
-
-    box.scrollTop=box.scrollHeight;
-}
-
-
-function sendChat(){
-
-    const input=
-        document.getElementById("chatInput");
-
-    const text=
-        input.value.trim();
-
-    if(!text)return;
-
-    chat.push({
-
-        id:uid(),
-
-        name:"Я",
-
-        text,
-
-        time:new Date().toLocaleString("ru-RU")
-
-    });
-
-    input.value="";
-
-    saveAll();
-
-    renderChat();
-
-    if(settings.speechEnabled){
-
-        speak(text,"Общий чат");
-    }
-}
-
-
-/* =========================================================
+/* =========================
    СЛОВАРЬ
-========================================================= */
+========================= */
 
-const builtInDictionary=[
-
-    ["Hello","Привет"],
-
-    ["Hi","Привет"],
-
-    ["Thanks","Спасибо"],
-
-    ["Thank you","Спасибо"],
-
-    ["Please","Пожалуйста"],
-
-    ["Yes","Да"],
-
-    ["No","Нет"],
-
-    ["Good","Хорошо"],
-
-    ["Good morning","Доброе утро"],
-
-    ["Good night","Спокойной ночи"],
-
-    ["How are you?","Как ты?"],
-
-    ["I understand","Я понимаю"],
-
-    ["I don't understand","Я не понимаю"]
-
+const builtIn=[
+["привет","Привет! 😊 Как настроение?",["Привет! Рад тебя видеть.","Привет! Как проходит день?"]],
+["как дела","Всё хорошо 😊 А у тебя?",["Нормально, спасибо!","Всё спокойно. Рассказывай."]],
+["что делаешь","Сейчас общаюсь с тобой.",["Отдыхаю и общаюсь.","Пока просто отдыхаю."]],
+["спасибо","Пожалуйста 😊",["Не за что!","Всегда пожалуйста."]],
+["пока","Пока! До встречи 👋",["Хорошего дня!","Ещё увидимся."]],
+["скучно","Давай что-нибудь придумаем.",["Можем просто поболтать.","Можно обсудить игру или фильм."]],
+["игра","Во что сейчас играешь?",["Какая игра тебе сейчас нравится?"]],
+["майнкрафт","Выживание или строительство?",["Что сейчас строишь?"]],
+["gta","А ты больше любишь RP или обычный GTA?",["Чем сейчас занимаешься в GTA?"]],
+["музыка","Какую музыку слушаешь?",["Есть песня, которую часто включаешь?"]],
+["фильм","Что-нибудь интересное недавно смотрел?",["Какой фильм можешь посоветовать?"]],
+["работа","Как прошёл рабочий день?",["Сильно устал сегодня?"]],
+["любовь","В отношениях важны доверие, уважение и комфорт.",["Главное — взаимное уважение.","О границах лучше говорить открыто."]],
+["отношения","Доверие и уважение очень важны.",["Важно, чтобы обоим было комфортно."]],
+["доброе утро","Доброе утро ☀️",["Доброе утро! Выспался?"]],
+["добрый вечер","Добрый вечер 🌙 Как прошёл день?",["Хорошего спокойного вечера."]]
 ];
 
+if(!dictionary.length){
+dictionary=builtIn.map(x=>({q:x[0],a:x[1],variants:x[2]}));
+saveDictData();
+}
 
-function renderDictionary(){
+function saveDictData(){
+localStorage.setItem("as_dict",JSON.stringify(dictionary));
+}
 
-    const box=
-        document.getElementById("dictionaryList");
+function renderDict(){
 
-    let html="";
+let box=document.getElementById("dictList");
 
-    builtInDictionary.forEach(x=>{
+if(!dictionary.length){
+box.innerHTML='<div class="empty">Словарь пуст.</div>';
+return;
+}
 
-        html+=`
+box.innerHTML=dictionary.map((x,i)=>`
+<div class="section">
 
-        <div class="dict-item">
+<b style="color:#ff963d">Пользователь:</b>
+${esc(x.q)}
 
-            <b>${esc(x[0])}</b>
+<div style="color:#aaa;margin-top:6px">
+<b>Ответ:</b> ${esc(x.a)}
+</div>
 
-            <div class="muted">
-                ${esc(x[1])}
-            </div>
+${x.variants?.length?
+`<div style="color:#777;font-size:13px;margin-top:6px">
+Варианты: ${x.variants.map(esc).join(" • ")}
+</div>`:""}
 
-        </div>
+<div class="actions" style="margin-top:10px">
+<button class="btn orange" onclick="openDict(${i})">✏️ Изменить</button>
+<button class="btn red" onclick="removeDict(${i})">🗑️ Удалить</button>
+</div>
 
-        `;
+</div>
+`).join("");
+}
 
-    });
+function openDict(i=null){
 
-    dictionary.forEach((x,index)=>{
+dictEditing=i;
 
-        html+=`
+let x=i===null?{q:"",a:"",variants:[]}:dictionary[i];
 
-        <div class="dict-item">
+document.getElementById("dQuestion").value=x.q;
+document.getElementById("dAnswer").value=x.a;
+document.getElementById("dVariants").value=(x.variants||[]).join("\n");
 
-            <div>
-                <b>${esc(x.phrase)}</b>
-            </div>
+document.getElementById("dictModal").classList.add("show");
+}
 
-            <div class="muted">
-                ${esc(x.meaning)}
-            </div>
+function saveDict(){
 
-            <div class="actions">
+let q=document.getElementById("dQuestion").value.trim().toLowerCase();
+let a=document.getElementById("dAnswer").value.trim();
 
-                <button class="btn"
-                        onclick="editDictionary(${index})">
-                    ✏️
-                </button>
+if(!q||!a){
+alert("Заполни фразу и ответ.");
+return;
+}
 
-                <button class="btn danger"
-                        onclick="deleteDictionary(${index})">
-                    🗑️
-                </button>
+let x={
+q:q,
+a:a,
+variants:lines("dVariants")
+};
 
-            </div>
+if(dictEditing===null)dictionary.push(x);
+else dictionary[dictEditing]=x;
 
-        </div>
+saveDictData();
+closeModal("dictModal");
+renderDict();
+dictEditing=null;
+}
 
-        `;
+function removeDict(i){
 
-    });
+if(!confirm("Удалить фразу?"))return;
 
-    box.innerHTML=html ||
-        '<div class="empty">Словарь пуст.</div>';
+dictionary.splice(i,1);
+saveDictData();
+renderDict();
+}
+
+function restoreDict(){
+
+if(!confirm("Заменить текущий словарь встроенным?"))return;
+
+dictionary=builtIn.map(x=>({q:x[0],a:x[1],variants:x[2]}));
+
+saveDictData();
+renderDict();
 }
 
 
-function addDictionaryItem(){
+/* =========================
+   ЧАТ
+========================= */
 
-    const phrase=
-        document.getElementById("dictPhrase")
-            .value.trim();
+function send(){
 
-    const meaning=
-        document.getElementById("dictMeaning")
-            .value.trim();
+let input=document.getElementById("chatInput");
+let text=input.value.trim();
 
-    if(!phrase || !meaning){
+if(!text)return;
 
-        alert("Заполни оба поля.");
+addMsg("user",text);
+input.value="";
 
-        return;
-    }
+let answer=getAnswer(text);
 
-    dictionary.push({
+setTimeout(()=>{
+addMsg("bot",answer);
+speak(answer,current);
+saveChat();
+},250);
 
-        id:uid(),
+saveChat();
+}
 
-        phrase,
+function getAnswer(text){
 
-        meaning
+let s=text.toLowerCase();
 
-    });
+let sorted=[...dictionary]
+.sort((a,b)=>b.q.length-a.q.length);
 
-    document.getElementById("dictPhrase").value="";
-    document.getElementById("dictMeaning").value="";
+for(let x of sorted){
 
-    saveAll();
+if(s.includes(x.q)){
 
-    renderDictionary();
+let a=[x.a,...(x.variants||[])];
+
+return a[Math.floor(Math.random()*a.length)];
+}
+}
+
+let generic=[
+"Интересно 😊 Расскажи подробнее.",
+"Понял тебя.",
+"Хорошая тема. Давай обсудим.",
+"А что ты сам об этом думаешь?",
+"Расскажи немного больше.",
+"Я тебя слушаю.",
+"Хм, интересно 🤔",
+"А какие у тебя планы?",
+"Звучит интересно.",
+"Продолжай 😊"
+];
+
+return generic[Math.floor(Math.random()*generic.length)];
+}
+
+function addMsg(type,text){
+
+let d=document.createElement("div");
+d.className="msg "+type;
+d.textContent=text;
+
+let w=document.getElementById("chatWindow");
+w.appendChild(d);
+w.scrollTop=w.scrollHeight;
+}
+
+function saveChat(){
+
+let data=[...document.querySelectorAll(".msg")].map(x=>({
+type:x.classList.contains("user")?"user":"bot",
+text:x.textContent
+}));
+
+localStorage.setItem("as_chat",JSON.stringify(data));
+}
+
+function loadChat(){
+
+let w=document.getElementById("chatWindow");
+
+if(w.dataset.loaded)return;
+w.dataset.loaded="1";
+
+let data=JSON.parse(localStorage.getItem("as_chat")||"[]");
+
+if(!data.length){
+addMsg("bot","Привет! 💬 Это общий чат. Словарь один для всех анкет.");
+return;
+}
+
+data.forEach(x=>addMsg(x.type,x.text));
 }
 
 
-function editDictionary(index){
-
-    const item=dictionary[index];
-
-    if(!item)return;
-
-    const phrase=
-        prompt("Фраза:",item.phrase);
-
-    if(phrase===null)return;
-
-    const meaning=
-        prompt("Значение:",item.meaning);
-
-    if(meaning===null)return;
-
-    item.phrase=phrase.trim();
-    item.meaning=meaning.trim();
-
-    saveAll();
-
-    renderDictionary();
-}
-
-
-function deleteDictionary(index){
-
-    dictionary.splice(index,1);
-
-    saveAll();
-
-    renderDictionary();
-}
-
-
-/* =========================================================
-   ПРОСМОТР ПО ССЫЛКЕ
-========================================================= */
-
-function normalizeLink(value){
-
-    let url=
-        String(value || "").trim();
-
-    if(!url)return "";
-
-    if(!/^https?:\/\//i.test(url)){
-        url="https://"+url;
-    }
-
-    try{
-
-        const parsed=
-            new URL(url);
-
-        if(
-            parsed.protocol!=="http:" &&
-            parsed.protocol!=="https:"
-        ){
-            return "";
-        }
-
-        return parsed.href;
-
-    }catch(e){
-
-        return "";
-    }
-}
-
-
-function openLink(){
-
-    const input=
-        document.getElementById("linkInput");
-
-    const url=
-        normalizeLink(input.value);
-
-    if(!url){
-
-        alert(
-            "Введи корректную ссылку, например https://example.com"
-        );
-
-        return;
-    }
-
-    currentViewerUrl=url;
-
-    input.value=url;
-
-    document.getElementById("linkStatus").innerHTML=
-        "Открывается: <b>"+esc(url)+"</b>";
-
-    document.getElementById("linkFrame").src=url;
-
-    addLinkHistory(url);
-}
-
-
-function openExternalLink(){
-
-    let url=
-        normalizeLink(
-            document.getElementById("linkInput").value
-        );
-
-    if(!url){
-
-        if(currentViewerUrl){
-            url=currentViewerUrl;
-        }else{
-
-            alert("Сначала введи ссылку.");
-
-            return;
-        }
-    }
-
-    currentViewerUrl=url;
-
-    window.open(
-        url,
-        "_blank",
-        "noopener,noreferrer"
-    );
-
-    addLinkHistory(url);
-}
-
-
-function openLinkFromProfile(url){
-
-    const normalized=
-        normalizeLink(url);
-
-    if(!normalized){
-
-        alert("Некорректная ссылка.");
-
-        return;
-    }
-
-    page("link");
-
-    document.getElementById("linkInput").value=
-        normalized;
-
-    currentViewerUrl=normalized;
-
-    document.getElementById("linkFrame").src=
-        normalized;
-
-    document.getElementById("linkStatus").innerHTML=
-        "Открывается: <b>"+esc(normalized)+"</b>";
-
-    addLinkHistory(normalized);
-}
-
-
-function clearLink(){
-
-    currentViewerUrl="";
-
-    document.getElementById("linkInput").value="";
-
-    document.getElementById("linkFrame").src=
-        "about:blank";
-
-    document.getElementById("linkStatus").textContent=
-        "Ссылка ещё не открыта.";
-}
-
-
-function addLinkHistory(url){
-
-    linkHistory=
-        linkHistory.filter(x=>x!==url);
-
-    linkHistory.unshift(url);
-
-    linkHistory=
-        linkHistory.slice(0,20);
-
-    localStorage.setItem(
-        "as_link_history",
-        JSON.stringify(linkHistory)
-    );
-
-    renderLinkHistory();
-}
-
-
-function renderLinkHistory(){
-
-    const box=
-        document.getElementById("linkHistory");
-
-    if(!box)return;
-
-    if(!linkHistory.length){
-
-        box.innerHTML=
-            '<div class="empty">История ссылок пока пустая.</div>';
-
-        return;
-    }
-
-    box.innerHTML=
-        linkHistory.map((url,index)=>`
-
-        <div class="history-item">
-
-            <div class="history-url">
-                ${esc(url)}
-            </div>
-
-            <button class="btn orange"
-                    onclick="useHistoryLink(${index})">
-                👁️ Смотреть
-            </button>
-
-            <button class="btn"
-                    onclick="openHistoryExternal(${index})">
-                🌐
-            </button>
-
-            <button class="btn danger"
-                    onclick="deleteHistoryLink(${index})">
-                🗑️
-            </button>
-
-        </div>
-
-    `).join("");
-}
-
-
-function useHistoryLink(index){
-
-    const url=
-        linkHistory[index];
-
-    if(!url)return;
-
-    currentViewerUrl=url;
-
-    document.getElementById("linkInput").value=url;
-
-    document.getElementById("linkFrame").src=url;
-
-    document.getElementById("linkStatus").innerHTML=
-        "Открывается: <b>"+esc(url)+"</b>";
-
-    window.scrollTo({
-        top:0,
-        behavior:"smooth"
-    });
-}
-
-
-function openHistoryExternal(index){
-
-    const url=
-        linkHistory[index];
-
-    if(!url)return;
-
-    window.open(
-        url,
-        "_blank",
-        "noopener,noreferrer"
-    );
-}
-
-
-function deleteHistoryLink(index){
-
-    linkHistory.splice(index,1);
-
-    saveAll();
-
-    renderLinkHistory();
-}
-
-
-function clearLinkHistory(){
-
-    if(!linkHistory.length)return;
-
-    if(!confirm("Очистить историю ссылок?"))return;
-
-    linkHistory=[];
-
-    saveAll();
-
-    renderLinkHistory();
-}
-
-
-/* =========================================================
+/* =========================
    ОЗВУЧКА
-========================================================= */
+========================= */
+
+let settings=JSON.parse(localStorage.getItem("as_settings")||"{}");
+
+settings.enabled=!!settings.enabled;
+settings.multi=!!settings.multi;
+settings.rate=settings.rate||1;
+settings.pitch=settings.pitch||1;
 
 function loadSettings(){
 
-    document.getElementById("speechEnabled").checked=
-        settings.speechEnabled ?? false;
-
-    document.getElementById("multiVoice").checked=
-        settings.multiVoice ?? true;
-
-    document.getElementById("speechRate").value=
-        settings.rate ?? 1;
-
-    document.getElementById("speechPitch").value=
-        settings.pitch ?? 1;
+document.getElementById("speechEnabled").checked=settings.enabled;
+document.getElementById("multiVoice").checked=settings.multi;
+document.getElementById("rate").value=settings.rate;
+document.getElementById("pitch").value=settings.pitch;
 }
-
 
 function saveSettings(){
 
-    settings={
+settings.enabled=document.getElementById("speechEnabled").checked;
+settings.multi=document.getElementById("multiVoice").checked;
+settings.rate=parseFloat(document.getElementById("rate").value);
+settings.pitch=parseFloat(document.getElementById("pitch").value);
 
-        speechEnabled:
-            document.getElementById("speechEnabled").checked,
+localStorage.setItem("as_settings",JSON.stringify(settings));
+}
 
-        multiVoice:
-            document.getElementById("multiVoice").checked,
+function getVoices(){
 
-        rate:
-            Number(
-                document.getElementById("speechRate").value
-            ),
+return speechSynthesis.getVoices().filter(v=>
+/ru(-|_)/i.test(v.lang)
+);
+}
 
-        pitch:
-            Number(
-                document.getElementById("speechPitch").value
-            )
-    };
+function speak(text,profileName){
 
-    saveAll();
+if(!settings.enabled)return;
+if(!("speechSynthesis" in window))return;
+
+speechSynthesis.cancel();
+
+let voices=getVoices();
+let voice=null;
+
+if(settings.multi&&voices.length){
+
+let hash=0;
+
+for(let c of String(profileName||"Общий чат")){
+hash=(hash+c.charCodeAt(0))%voices.length;
+}
+
+voice=voices[hash];
+}else if(voices.length){
+
+voice=voices[0];
+}
+
+let u=new SpeechSynthesisUtterance(text);
+
+u.lang=voice?voice.lang:"ru-RU";
+u.voice=voice||null;
+u.rate=settings.rate;
+u.pitch=settings.pitch;
+
+speechSynthesis.speak(u);
+}
+
+function testVoice(){
+
+saveSettings();
+
+speak(
+"Проверка озвучки. Многоголосый режим можно включить в настройках.",
+current||"Общий чат"
+);
 }
 
 
-function chooseVoice(name){
+/* =========================
+   СТРАНИЦЫ
+========================= */
 
-    const voices=
-        window.speechSynthesis
-            ? speechSynthesis.getVoices()
-            : [];
+function page(x){
 
-    const russian=
-        voices.filter(v=>
-            v.lang &&
-            v.lang.toLowerCase().startsWith("ru")
-        );
+let pages={
+profiles:"profilesPage",
+chat:"chatPage",
+dict:"dictPage",
+deleted:"deletedPage",
+settings:"settingsPage"
+};
 
-    if(!russian.length)return null;
+Object.values(pages).forEach(id=>{
+document.getElementById(id).style.display="none";
+});
 
-    if(!settings.multiVoice){
+document.getElementById(pages[x]).style.display="block";
 
-        return russian[0];
-    }
+document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));
 
-    let hash=0;
+let tabs={
+profiles:"tProfiles",
+chat:"tChat",
+dict:"tDict",
+deleted:"tDeleted",
+settings:"tSettings"
+};
 
-    for(let i=0;i<name.length;i++){
+document.getElementById(tabs[x]).classList.add("active");
 
-        hash=
-            ((hash<<5)-hash)+
-            name.charCodeAt(i);
-
-        hash|=0;
-    }
-
-    return russian[
-        Math.abs(hash)%russian.length
-    ];
+if(x==="dict")renderDict();
+if(x==="deleted")renderDeleted();
+if(x==="chat")loadChat();
+if(x==="settings")loadSettings();
 }
 
 
-function speak(text,name="AdultStars"){
+/* =========================
+   УТИЛИТЫ
+========================= */
 
-    if(!("speechSynthesis" in window))return;
+function closeModal(id){
+document.getElementById(id).classList.remove("show");
+}
 
-    if(!settings.speechEnabled)return;
+function esc(x){
+return String(x??"")
+.replaceAll("&","&amp;")
+.replaceAll("<","&lt;")
+.replaceAll(">","&gt;")
+.replaceAll('"',"&quot;")
+.replaceAll("'","&#039;");
+}
 
-    speechSynthesis.cancel();
+function attr(x){
+return String(x??"")
+.replaceAll("\\","\\\\")
+.replaceAll("'","\\'");
+}
 
-    const utterance=
-        new SpeechSynthesisUtterance(text);
+function safe(url){
 
-    utterance.lang="ru-RU";
+let x=String(url||"").trim();
 
-    utterance.rate=
-        Number(settings.rate ?? 1);
+if(/^https?:\/\//i.test(x))
+return x.replaceAll('"',"");
 
-    utterance.pitch=
-        Number(settings.pitch ?? 1);
-
-    const voice=
-        chooseVoice(name);
-
-    if(voice){
-        utterance.voice=voice;
-    }
-
-    speechSynthesis.speak(utterance);
+return "#";
 }
 
 
-function speakProfile(id){
-
-    const p=
-        profiles.find(x=>x.id===id);
-
-    if(!p)return;
-
-    const text=[
-        p.original,
-        p.russian,
-        p.country,
-        p.description
-    ].filter(Boolean).join(". ");
-
-    if(!settings.speechEnabled){
-
-        settings.speechEnabled=true;
-
-        saveAll();
-    }
-
-    speak(
-        text,
-        p.original
-    );
-}
-
-
-/* =========================================================
-   ЭКСПОРТ / ИМПОРТ
-========================================================= */
-
-function exportData(){
-
-    const data={
-
-        profiles,
-
-        deletedProfiles,
-
-        favorites,
-
-        dictionary,
-
-        chat,
-
-        settings,
-
-        linkHistory
-
-    };
-
-    const blob=
-        new Blob(
-            [JSON.stringify(data,null,2)],
-            {type:"application/json"}
-        );
-
-    const url=
-        URL.createObjectURL(blob);
-
-    const a=
-        document.createElement("a");
-
-    a.href=url;
-
-    a.download=
-        "adultstars-backup.json";
-
-    a.click();
-
-    URL.revokeObjectURL(url);
-}
-
-
-function importData(){
-
-    const input=
-        document.createElement("input");
-
-    input.type="file";
-
-    input.accept=".json,application/json";
-
-    input.onchange=()=>{
-
-        const file=input.files[0];
-
-        if(!file)return;
-
-        const reader=
-            new FileReader();
-
-        reader.onload=()=>{
-
-            try{
-
-                const data=
-                    JSON.parse(reader.result);
-
-                profiles=
-                    Array.isArray(data.profiles)
-                    ? data.profiles
-                    : [];
-
-                deletedProfiles=
-                    Array.isArray(data.deletedProfiles)
-                    ? data.deletedProfiles
-                    : [];
-
-                favorites=
-                    Array.isArray(data.favorites)
-                    ? data.favorites
-                    : [];
-
-                dictionary=
-                    Array.isArray(data.dictionary)
-                    ? data.dictionary
-                    : [];
-
-                chat=
-                    Array.isArray(data.chat)
-                    ? data.chat
-                    : [];
-
-                settings=
-                    data.settings || {};
-
-                linkHistory=
-                    Array.isArray(data.linkHistory)
-                    ? data.linkHistory
-                    : [];
-
-                saveAll();
-
-                renderProfiles();
-
-                alert("Данные импортированы.");
-
-            }catch(e){
-
-                alert("Не удалось прочитать файл.");
-
-            }
-
-        };
-
-        reader.readAsText(file);
-    };
-
-    input.click();
-}
-
-
-function resetEverything(){
-
-    if(!confirm(
-        "Удалить все анкеты, чат, словарь и настройки?"
-    ))return;
-
-    localStorage.removeItem("as_profiles");
-    localStorage.removeItem("as_deleted");
-    localStorage.removeItem("as_fav");
-    localStorage.removeItem("as_dict");
-    localStorage.removeItem("as_chat");
-    localStorage.removeItem("as_settings");
-    localStorage.removeItem("as_link_history");
-
-    location.reload();
-}
-
-
-/* =========================================================
+/* =========================
    ЗАПУСК
-========================================================= */
+========================= */
 
-function init(){
+render();
+loadSettings();
 
-    loadSettings();
-
-    renderProfiles();
-
-    renderChat();
-
-    renderDictionary();
-
-    renderLinkHistory();
-
-    renderDeleted();
-
-    if("speechSynthesis" in window){
-
-        speechSynthesis.onvoiceschanged=()=>{
-            speechSynthesis.getVoices();
-        };
-    }
+if("speechSynthesis" in window){
+speechSynthesis.onvoiceschanged=()=>{};
 }
-
-init();
 
 </script>
 
