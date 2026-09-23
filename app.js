@@ -1,855 +1,1087 @@
-// =====================================
-// ADULTSTARS — APP.JS
-// =====================================
+"use strict";
 
-let currentActress = null;
-let currentPage = "catalog";
+/* =========================
+   AdultStars — app.js
+========================= */
 
-let customActresses = JSON.parse(
-  localStorage.getItem("customActresses") || "[]"
-);
+const $ = (selector) => document.querySelector(selector);
 
-let favorites = JSON.parse(
-  localStorage.getItem("favorites") || "[]"
-);
+let profiles = JSON.parse(localStorage.getItem("adultstars_profiles") || "{}");
+let favorites = JSON.parse(localStorage.getItem("adultstars_favorites") || "[]");
 
-let profiles = JSON.parse(
-  localStorage.getItem("profiles") || "{}"
-);
+let settings = JSON.parse(localStorage.getItem("adultstars_settings") || "{}");
 
-let settings = JSON.parse(
-  localStorage.getItem("settings") || "{}"
-);
+settings = {
+  language: settings.language || "ru-RU",
+  rate: Number(settings.rate) || 1,
+  pitch: Number(settings.pitch) || 1,
+  voice: settings.voice || "",
+  style: settings.style || "friendly",
+  ...settings
+};
 
+let currentName = null;
+let currentChatName = null;
 
-// =====================================
-// ОБЩИЕ ФУНКЦИИ
-// =====================================
+/* =========================
+   Имена каталога
+========================= */
 
-function allActresses() {
-  return [...new Set([...actresses, ...customActresses])];
+const baseNames = [
+  "Abella Danger",
+  "Angela White",
+  "Ariana Marie",
+  "Asa Akira",
+  "Autumn Falls",
+  "Ava Addams",
+  "Briana Banks",
+  "Brandi Love",
+  "Brooklyn Chase",
+  "Carmen Caliente",
+  "Casey Calvert",
+  "Chanel Preston",
+  "Cindy Starfall",
+  "Dani Daniels",
+  "Emily Willis",
+  "Eva Elfie",
+  "Gianna Dior",
+  "Gina Valentina",
+  "Jasmine Sherni",
+  "Jenna Haze",
+  "Jessa Rhodes",
+  "Jessica Rizzo",
+  "Jill Kassidy",
+  "Julia Ann",
+  "Kendra Lust",
+  "Kenzie Reeves",
+  "Kimmy Granger",
+  "Lana Rhoades",
+  "Lena Paul",
+  "Lexi Luna",
+  "Lily Ivy",
+  "Mia Malkova",
+  "Mia Melano",
+  "Molly Little",
+  "Monica Bellucci",
+  "Mia Khalifa",
+  "Nina North",
+  "Nicole Aniston",
+  "Nikki Benz",
+  "Olivia Austin",
+  "Piper Perri",
+  "Riley Reid",
+  "Romi Rain",
+  "Sasha Grey",
+  "Scarlett Sage",
+  "Sky Bri",
+  "Sophie Dee",
+  "Stoya",
+  "Sybil Stallone",
+  "Tori Black",
+  "Vanna Bardot",
+  "Victoria June",
+  "Whitney Wright",
+  "Wifey",
+  "Abby Lee Brazil",
+  "Adriana Chechik",
+  "Alexis Texas",
+  "Allie Haze",
+  "Amarna Miller",
+  "Amy Anderssen",
+  "Anna Bell Peaks",
+  "April O'Neil",
+  "Aubrey Kate",
+  "Bella Rolland",
+  "Blake Blossom",
+  "Bonnie Rotten",
+  "Bunny Colby",
+  "Charlotte Sartre",
+  "Christen Courtney",
+  "Clara Mia",
+  "Cory Chase",
+  "Daisy Stone",
+  "Elsa Jean",
+  "Emma Hix",
+  "Erin Everheart",
+  "Gia Derza",
+  "Harley Dean",
+  "Isiah Maxwell",
+  "Jade Kush",
+  "Jayden Cole",
+  "Jillian Janson",
+  "Kali Roses",
+  "Katrina Jade",
+  "Kira Noir",
+  "Kylie Page",
+  "Lacey Lennon",
+  "Lauren Phillips",
+  "Lexi Lore",
+  "Mackenzie Moss",
+  "Madison Ivy",
+  "Mandy Muse",
+  "Marley Brinx",
+  "Natalia Starr",
+  "Nikki Hill",
+  "Penny Barber",
+  "Rachel Starr",
+  "Sarah Vandella",
+  "Valentina Nappi",
+  "Veronica Avluv"
+];
+
+/* =========================
+   Вспомогательные функции
+========================= */
+
+function escapeHTML(value = "") {
+  return String(value)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
 }
 
-function esc(text = "") {
-  return String(text).replace(/[&<>"']/g, char => ({
-    "&": "&amp;",
-    "<": "&lt;",
-    ">": "&gt;",
-    '"': "&quot;",
-    "'": "&#039;"
-  }[char]));
+function safeURL(url = "") {
+  const value = String(url).trim();
+
+  if (
+    value.startsWith("https://") ||
+    value.startsWith("http://") ||
+    value.startsWith("data:image/")
+  ) {
+    return value;
+  }
+
+  return "";
 }
 
 function initials(name) {
   return name
     .split(" ")
-    .map(word => word[0])
-    .join("")
     .slice(0, 2)
+    .map((word) => word[0] || "")
+    .join("")
     .toUpperCase();
 }
 
 function saveAll() {
-  localStorage.setItem("profiles", JSON.stringify(profiles));
-  localStorage.setItem("favorites", JSON.stringify(favorites));
   localStorage.setItem(
-    "customActresses",
-    JSON.stringify(customActresses)
+    "adultstars_profiles",
+    JSON.stringify(profiles)
   );
-  localStorage.setItem("settings", JSON.stringify(settings));
+
+  localStorage.setItem(
+    "adultstars_favorites",
+    JSON.stringify(favorites)
+  );
+
+  localStorage.setItem(
+    "adultstars_settings",
+    JSON.stringify(settings)
+  );
+}
+
+function defaultProfile(name) {
+  return {
+    name,
+    photo: "",
+    description:
+      "Виртуальная карточка профиля. Информация может быть изменена вручную.",
+    country: "Не указано",
+    debut: "Не указано",
+    collaborations: "Не указано",
+    websites: [],
+    videos: [],
+    tags: ["18+", "профиль", "виртуальная карточка"],
+    chat: [],
+    custom: false
+  };
 }
 
 function getProfile(name) {
   if (!profiles[name]) {
-    profiles[name] = {
-      name,
-      photo: "",
-      description: "",
-      debut: "",
-      collaborations: "",
-      websites: "",
-      country: "",
-      interests: "",
-      greeting: `Привет! Это виртуальный профиль ${name}.`,
-      messages: [],
-      videos: []
-    };
-  }
-
-  if (!profiles[name].messages) {
-    profiles[name].messages = [];
-  }
-
-  if (!profiles[name].videos) {
-    profiles[name].videos = [];
+    profiles[name] = defaultProfile(name);
+    saveAll();
   }
 
   return profiles[name];
 }
 
+function allActresses() {
+  const names = [...new Set([
+    ...baseNames,
+    ...Object.keys(profiles)
+  ])];
 
-// =====================================
-// НАВИГАЦИЯ
-// =====================================
+  return names.map((name) => getProfile(name));
+}
 
-function showPage(page) {
-  currentPage = page;
+/* =========================
+   Навигация
+========================= */
 
-  document.querySelectorAll(".page").forEach(element => {
-    element.classList.add("hidden");
-    element.classList.remove("active");
+function showPage(pageName) {
+  document.querySelectorAll(".page").forEach((page) => {
+    page.classList.remove("active");
   });
 
-  const target = document.getElementById(page + "Page");
+  const target = $(`#${pageName}`);
 
   if (target) {
-    target.classList.remove("hidden");
     target.classList.add("active");
   }
 
-  if (page === "catalog") renderCatalog();
-  if (page === "favorites") renderFavorites();
-  if (page === "challenges") renderChallenges();
-  if (page === "preferences") renderPreferences();
+  document.querySelectorAll("[data-page]").forEach((button) => {
+    button.classList.toggle(
+      "active",
+      button.dataset.page === pageName
+    );
+  });
+
+  if (pageName === "catalogPage") renderCatalog();
+  if (pageName === "favoritesPage") renderFavorites();
+  if (pageName === "preferencesPage") renderPreferences();
+  if (pageName === "challengesPage") renderChallenges();
 }
 
+document.addEventListener("click", (event) => {
+  const pageButton = event.target.closest("[data-page]");
 
-// =====================================
-// КАРТОЧКИ
-// =====================================
+  if (pageButton) {
+    showPage(pageButton.dataset.page);
+  }
+});
 
-function createCard(name) {
-  const profile = getProfile(name);
-  const favorite = favorites.includes(name);
+/* =========================
+   Карточки
+========================= */
+
+function createCard(profile) {
+  const isFavorite = favorites.includes(profile.name);
 
   const card = document.createElement("article");
-  card.className = "actress-card";
+  card.className = "card";
 
-  const photo = profile.photo
-    ? `<img src="${esc(profile.photo)}" alt="${esc(name)}">`
-    : `<span>${esc(initials(name))}</span>`;
+  const photo = safeURL(profile.photo);
 
   card.innerHTML = `
     <div class="card-photo">
-      ${photo}
+      ${
+        photo
+          ? `<img src="${escapeHTML(photo)}" alt="${escapeHTML(profile.name)}">`
+          : `<span>${escapeHTML(initials(profile.name))}</span>`
+      }
     </div>
 
-    <div class="card-info">
-      <div class="card-name">
-        ${esc(name)}
-      </div>
+    <div class="card-body">
+      <h3>${escapeHTML(profile.name)}</h3>
 
-      <div class="card-actions">
-        <button onclick="openProfile('${esc(name)}')">
+      <p class="muted">
+        ${escapeHTML(profile.country || "Страна не указана")}
+      </p>
+
+      <div class="card-buttons">
+        <button class="primary open-profile">
           Профиль
         </button>
 
-        <button
-          class="favorite-button ${favorite ? "active" : ""}"
-          onclick="toggleFavorite('${esc(name)}')">
-          ${favorite ? "★" : "☆"}
+        <button class="secondary favorite-button">
+          ${isFavorite ? "★" : "☆"}
         </button>
       </div>
     </div>
   `;
+
+  card
+    .querySelector(".open-profile")
+    .addEventListener("click", () => {
+      openProfile(profile.name);
+    });
+
+  card
+    .querySelector(".favorite-button")
+    .addEventListener("click", () => {
+      toggleFavorite(profile.name);
+    });
 
   return card;
 }
 
 function renderCatalog(list = allActresses()) {
-  const grid = document.getElementById("actressesGrid");
+  const container = $("#catalogGrid");
 
-  if (!grid) return;
+  if (!container) return;
 
-  grid.innerHTML = "";
+  container.innerHTML = "";
 
   if (!list.length) {
-    grid.innerHTML = `
-      <div class="empty-message">
-        Ничего не найдено
-      </div>
+    container.innerHTML = `
+      <p class="empty-message">
+        Ничего не найдено.
+      </p>
     `;
+
     return;
   }
 
-  list.forEach(name => {
-    grid.appendChild(createCard(name));
+  list.forEach((profile) => {
+    container.appendChild(createCard(profile));
   });
 }
 
 function renderFavorites() {
-  const grid = document.getElementById("favoritesGrid");
+  const container = $("#favoritesGrid");
 
-  if (!grid) return;
+  if (!container) return;
 
-  grid.innerHTML = "";
-
-  const list = allActresses().filter(name =>
-    favorites.includes(name)
+  const list = allActresses().filter((profile) =>
+    favorites.includes(profile.name)
   );
 
+  container.innerHTML = "";
+
   if (!list.length) {
-    grid.innerHTML = `
-      <div class="empty-message">
-        Избранное пока пустое ⭐
-      </div>
+    container.innerHTML = `
+      <p class="empty-message">
+        В избранном пока ничего нет.
+      </p>
     `;
+
     return;
   }
 
-  list.forEach(name => {
-    grid.appendChild(createCard(name));
+  list.forEach((profile) => {
+    container.appendChild(createCard(profile));
   });
 }
 
 function toggleFavorite(name) {
   if (favorites.includes(name)) {
-    favorites = favorites.filter(item => item !== name);
+    favorites = favorites.filter((item) => item !== name);
   } else {
     favorites.push(name);
   }
 
   saveAll();
-
-  if (currentPage === "favorites") {
-    renderFavorites();
-  } else {
-    renderCatalog();
-  }
+  renderCatalog();
+  renderFavorites();
 }
 
-function searchActresses() {
-  const input = document.getElementById("searchInput");
-  const query = input.value.toLowerCase().trim();
+function searchActresses(value) {
+  const query = String(value).toLowerCase().trim();
 
-  const result = allActresses().filter(name =>
-    name.toLowerCase().includes(query)
+  const result = allActresses().filter((profile) =>
+    profile.name.toLowerCase().includes(query)
   );
 
   renderCatalog(result);
 }
 
-
-// =====================================
-// ПРОФИЛЬ
-// =====================================
+/* =========================
+   Профиль
+========================= */
 
 function openProfile(name) {
-  currentActress = name;
-  showPage("profile");
-  renderProfile(name);
-}
+  currentName = name;
 
-function renderProfile(name) {
   const profile = getProfile(name);
-  const container = document.getElementById("profileContent");
+  const container = $("#profileContent");
 
   if (!container) return;
 
-  const photo = profile.photo
-    ? `<img src="${esc(profile.photo)}" alt="${esc(name)}">`
-    : `<span>${esc(initials(name))}</span>`;
-
-  const videos = profile.videos.map((video, index) => `
-    <div class="challenge-card">
-      <p>${esc(video.title || "Видео")}</p>
-      <a href="${esc(video.url)}"
-         target="_blank"
-         rel="noopener noreferrer">
-        Открыть видео
-      </a>
-      <button
-        class="secondary-btn"
-        onclick="deleteVideo('${esc(name)}', ${index})">
-        Удалить
-      </button>
-    </div>
-  `).join("");
+  const photo = safeURL(profile.photo);
 
   container.innerHTML = `
-    <div class="profile-box">
-
+    <div class="profile-header">
       <div class="profile-photo">
-        ${photo}
-      </div>
-
-      <h2>${esc(name)}</h2>
-
-      <div class="notice">
-        Виртуальный профиль. Информация редактируется вручную.
-      </div>
-
-      <label>Фото из галереи</label>
-      <input
-        type="file"
-        accept="image/*"
-        onchange="uploadPhoto(event, '${esc(name)}')">
-
-      <label>URL фотографии</label>
-      <input id="photoUrl"
-             value="${esc(profile.photo)}"
-             placeholder="https://...">
-
-      <label>Описание</label>
-      <textarea id="description">${esc(profile.description)}</textarea>
-
-      <label>Дебют</label>
-      <input id="debut" value="${esc(profile.debut)}">
-
-      <label>Коллаборации</label>
-      <textarea id="collaborations">${esc(profile.collaborations)}</textarea>
-
-      <label>Сайты</label>
-      <input id="websites" value="${esc(profile.websites)}">
-
-      <label>Страна</label>
-      <input id="country" value="${esc(profile.country)}">
-
-      <label>Интересы</label>
-      <textarea id="interests">${esc(profile.interests)}</textarea>
-
-      <label>Приветствие бота</label>
-      <textarea id="greeting">${esc(profile.greeting)}</textarea>
-
-      <div class="profile-buttons">
-        <button class="primary-btn"
-                onclick="saveProfile('${esc(name)}')">
-          💾 Сохранить
-        </button>
-
-        <button class="secondary-btn"
-                onclick="generateDescription('${esc(name)}')">
-          🎲 Описание
-        </button>
-
-        <button class="secondary-btn"
-                onclick="openChat('${esc(name)}')">
-          💬 Чат
-        </button>
-
-        <button class="secondary-btn"
-                onclick="openVideoForm('${esc(name)}')">
-          🎬 Добавить видео
-        </button>
-      </div>
-
-      <h3 style="margin-top:25px;">🎬 Видео</h3>
-
-      <div id="videoList">
-        ${videos || `<p>Видео пока не добавлены.</p>`}
-      </div>
-
-      <div class="profile-buttons">
-        <button class="secondary-btn"
-                onclick="toggleFavorite('${esc(name)}')">
-          ⭐ Избранное
-        </button>
-
         ${
-          customActresses.includes(name)
-            ? `<button class="secondary-btn"
-                       onclick="deleteCustomCard('${esc(name)}')">
-                 🗑 Удалить карточку
-               </button>`
-            : ""
+          photo
+            ? `<img src="${escapeHTML(photo)}" alt="${escapeHTML(name)}">`
+            : `<span>${escapeHTML(initials(name))}</span>`
         }
       </div>
 
+      <div>
+        <h2>${escapeHTML(profile.name)}</h2>
+        <p class="muted">
+          ${escapeHTML(profile.country || "Страна не указана")}
+        </p>
+      </div>
     </div>
+
+    <div class="profile-buttons">
+      <button class="primary" id="editProfileButton">
+        Редактировать
+      </button>
+
+      <button class="secondary" id="photoButton">
+        Изменить фото
+      </button>
+
+      <button class="secondary" id="deletePhotoButton">
+        Удалить фото
+      </button>
+
+      <button class="secondary" id="chatProfileButton">
+        Открыть чат
+      </button>
+    </div>
+
+    <section class="profile-section">
+      <h3>Описание</h3>
+      <p>${escapeHTML(profile.description)}</p>
+    </section>
+
+    <section class="profile-section">
+      <h3>Информация</h3>
+      <p><b>Страна:</b> ${escapeHTML(profile.country)}</p>
+      <p><b>Дебют:</b> ${escapeHTML(profile.debut)}</p>
+      <p><b>Коллаборации:</b> ${escapeHTML(profile.collaborations)}</p>
+    </section>
+
+    <section class="profile-section">
+      <h3>Сайты</h3>
+      <div id="websitesList"></div>
+    </section>
+
+    <section class="profile-section">
+      <h3>Видео</h3>
+      <div id="videosList"></div>
+    </section>
   `;
-}
 
-function saveProfile(name) {
-  const profile = getProfile(name);
+  const websitesList = $("#websitesList");
+  const videosList = $("#videosList");
 
-  profile.photo = document.getElementById("photoUrl").value;
-  profile.description = document.getElementById("description").value;
-  profile.debut = document.getElementById("debut").value;
-  profile.collaborations =
-    document.getElementById("collaborations").value;
-  profile.websites = document.getElementById("websites").value;
-  profile.country = document.getElementById("country").value;
-  profile.interests = document.getElementById("interests").value;
-  profile.greeting = document.getElementById("greeting").value;
+  if (profile.websites.length) {
+    profile.websites.forEach((url) => {
+      const safe = safeURL(url);
 
-  saveAll();
-  renderProfile(name);
-  renderCatalog();
+      if (!safe) return;
 
-  alert("Профиль сохранён!");
-}
-
-function uploadPhoto(event, name) {
-  const file = event.target.files[0];
-
-  if (!file) return;
-
-  if (!file.type.startsWith("image/")) {
-    alert("Выбери изображение.");
-    return;
+      websitesList.innerHTML += `
+        <p>
+          <a href="${escapeHTML(safe)}"
+             target="_blank"
+             rel="noopener noreferrer">
+             Открыть сайт
+          </a>
+        </p>
+      `;
+    });
+  } else {
+    websitesList.innerHTML = `<p class="muted">Ссылок пока нет.</p>`;
   }
 
-  const reader = new FileReader();
+  if (profile.videos.length) {
+    profile.videos.forEach((url) => {
+      const safe = safeURL(url);
 
-  reader.onload = event => {
-    getProfile(name).photo = event.target.result;
+      if (!safe) return;
+
+      videosList.innerHTML += `
+        <p>
+          <a href="${escapeHTML(safe)}"
+             target="_blank"
+             rel="noopener noreferrer">
+             Открыть видео
+          </a>
+        </p>
+      `;
+    });
+  } else {
+    videosList.innerHTML = `<p class="muted">Видео пока нет.</p>`;
+  }
+
+  $("#editProfileButton").addEventListener("click", () => {
+    editProfile(name);
+  });
+
+  $("#photoButton").addEventListener("click", () => {
+    uploadPhoto(name);
+  });
+
+  $("#deletePhotoButton").addEventListener("click", () => {
+    profile.photo = "";
     saveAll();
-    renderProfile(name);
-    renderCatalog();
-  };
+    openProfile(name);
+  });
 
-  reader.readAsDataURL(file);
+  $("#chatProfileButton").addEventListener("click", () => {
+    openChat(name);
+  });
+
+  showPage("profilePage");
+}
+
+/* =========================
+   Редактирование профиля
+========================= */
+
+function editProfile(name) {
+  const profile = getProfile(name);
+
+  const description = prompt(
+    "Описание профиля:",
+    profile.description
+  );
+
+  if (description !== null) {
+    profile.description = description;
+  }
+
+  const country = prompt(
+    "Страна:",
+    profile.country
+  );
+
+  if (country !== null) {
+    profile.country = country;
+  }
+
+  const debut = prompt(
+    "Дебют:",
+    profile.debut
+  );
+
+  if (debut !== null) {
+    profile.debut = debut;
+  }
+
+  const collaborations = prompt(
+    "Коллаборации:",
+    profile.collaborations
+  );
+
+  if (collaborations !== null) {
+    profile.collaborations = collaborations;
+  }
+
+  const website = prompt(
+    "Добавить сайт. Оставь пустым, если не нужно:"
+  );
+
+  if (website && safeURL(website)) {
+    profile.websites.push(website);
+  }
+
+  const video = prompt(
+    "Добавить ссылку на видео. Оставь пустым, если не нужно:"
+  );
+
+  if (video && safeURL(video)) {
+    profile.videos.push(video);
+  }
+
+  saveAll();
+  openProfile(name);
+}
+
+function uploadPhoto(name) {
+  const profile = getProfile(name);
+
+  const input = document.createElement("input");
+  input.type = "file";
+  input.accept = "image/*";
+
+  input.addEventListener("change", () => {
+    const file = input.files[0];
+
+    if (!file) return;
+
+    const reader = new FileReader();
+
+    reader.onload = () => {
+      profile.photo = reader.result;
+      saveAll();
+      openProfile(name);
+    };
+
+    reader.readAsDataURL(file);
+  });
+
+  input.click();
 }
 
 function generateDescription(name) {
-  const descriptions = [
-    "Спокойный и дружелюбный виртуальный профиль.",
-    "Любит интересные разговоры и новые темы.",
-    "Предпочитает уважительное и позитивное общение.",
-    "Виртуальный персонаж с индивидуальными настройками."
-  ];
-
   const profile = getProfile(name);
+
+  const descriptions = [
+    "Виртуальный профиль с дружелюбным стилем общения.",
+    "Карточка создана для личной коллекции и заметок.",
+    "Профиль с возможностью добавления своих описаний и ссылок.",
+    "Виртуальная анкета с настройками общения.",
+    "Профиль для каталога AdultStars."
+  ];
 
   profile.description =
     descriptions[Math.floor(Math.random() * descriptions.length)];
 
   saveAll();
-  renderProfile(name);
+  openProfile(name);
 }
 
+/* =========================
+   Создание своей карточки
+========================= */
 
-// =====================================
-// СОЗДАНИЕ СОБСТВЕННОЙ КАРТОЧКИ
-// =====================================
-
-function openCreateCard() {
-  const name = prompt("Введите имя новой карточки:");
+function createCustomProfile() {
+  const name = prompt("Введите имя для новой карточки:");
 
   if (!name || !name.trim()) return;
 
   const cleanName = name.trim();
 
-  if (allActresses().includes(cleanName)) {
+  if (profiles[cleanName] || baseNames.includes(cleanName)) {
     alert("Такая карточка уже существует.");
     return;
   }
 
-  customActresses.push(cleanName);
-  getProfile(cleanName);
+  profiles[cleanName] = {
+    ...defaultProfile(cleanName),
+    custom: true
+  };
 
   saveAll();
   renderCatalog();
-
   openProfile(cleanName);
 }
 
-function deleteCustomCard(name) {
-  if (!customActresses.includes(name)) return;
-
-  if (!confirm("Удалить эту карточку?")) return;
-
-  customActresses = customActresses.filter(item => item !== name);
-
-  delete profiles[name];
-  favorites = favorites.filter(item => item !== name);
-
-  saveAll();
-  showPage("catalog");
-}
-
-
-// =====================================
-// ВИДЕО ПО ССЫЛКЕ
-// =====================================
-
-function openVideoForm(name) {
-  const title = prompt("Название видео:");
-
-  if (title === null) return;
-
-  const url = prompt("Вставь ссылку на видео:");
-
-  if (!url || !url.startsWith("http")) {
-    alert("Нужна корректная ссылка.");
-    return;
-  }
-
-  const profile = getProfile(name);
-
-  profile.videos.push({
-    title: title || "Видео",
-    url
-  });
-
-  saveAll();
-  renderProfile(name);
-}
-
-function deleteVideo(name, index) {
-  const profile = getProfile(name);
-
-  profile.videos.splice(index, 1);
-
-  saveAll();
-  renderProfile(name);
-}
-
-
-// =====================================
-// ВИРТУАЛЬНЫЙ ЧАТ
-// =====================================
-
-function openChat(name) {
-  currentActress = name;
-  showPage("chat");
-  renderChat(name);
-}
-
-function renderChat(name) {
-  const profile = getProfile(name);
-  const container = document.getElementById("chatContent");
+function addCreateButton() {
+  const container = $("#catalogActions");
 
   if (!container) return;
 
-  let messages = profile.messages.map(message => `
-    <div class="message ${message.user ? "user" : "bot"}">
-      ${esc(message.text)}
-    </div>
-  `).join("");
+  container.innerHTML = `
+    <button class="primary" id="createProfileButton">
+      + Создать карточку
+    </button>
+  `;
 
-  if (!messages) {
-    messages = `
+  $("#createProfileButton").addEventListener(
+    "click",
+    createCustomProfile
+  );
+}
+
+/* =========================
+   Чат
+========================= */
+
+function openChat(name) {
+  currentChatName = name;
+
+  const profile = getProfile(name);
+  const container = $("#chatContent");
+
+  if (!container) return;
+
+  if (!Array.isArray(profile.chat)) {
+    profile.chat = [];
+  }
+
+  container.innerHTML = `
+    <div class="chat-header">
+      <h2>Чат с ${escapeHTML(name)}</h2>
+      <p class="muted">
+        Виртуальный собеседник. Ответы генерируются автоматически.
+      </p>
+    </div>
+
+    <div id="messagesList" class="messages-list"></div>
+
+    <div class="chat-form">
+      <input
+        id="chatInput"
+        type="text"
+        placeholder="Напиши сообщение..."
+      >
+
+      <button class="primary" id="sendChatButton">
+        Отправить
+      </button>
+
+      <button class="secondary" id="speakChatButton">
+        🔊
+      </button>
+    </div>
+  `;
+
+  renderMessages();
+
+  $("#sendChatButton").addEventListener(
+    "click",
+    sendChatMessage
+  );
+
+  $("#speakChatButton").addEventListener(
+    "click",
+    speakLastMessage
+  );
+
+  $("#chatInput").addEventListener("keydown", (event) => {
+    if (event.key === "Enter") {
+      sendChatMessage();
+    }
+  });
+
+  showPage("chatPage");
+}
+
+function renderMessages() {
+  const container = $("#messagesList");
+
+  if (!container || !currentChatName) return;
+
+  const profile = getProfile(currentChatName);
+
+  container.innerHTML = "";
+
+  if (!profile.chat.length) {
+    container.innerHTML = `
       <div class="message bot">
-        ${esc(profile.greeting)}
+        Привет! Это виртуальный чат. Можем поговорить
+        об интересах, общении, границах и настроениях.
       </div>
     `;
   }
 
-  container.innerHTML = `
-    <div class="chat-box">
+  profile.chat.forEach((message) => {
+    const item = document.createElement("div");
 
-      <div class="chat-title">
-        💬 ${esc(name)}
-      </div>
+    item.className =
+      message.author === "user"
+        ? "message user"
+        : "message bot";
 
-      <div class="notice">
-        Это виртуальный бот, а не реальный человек.
-      </div>
+    item.textContent = message.text;
 
-      <div class="chat-messages" id="chatMessages">
-        ${messages}
-      </div>
+    container.appendChild(item);
+  });
 
-      <div class="chat-input-area">
-        <input
-          id="chatInput"
-          placeholder="Напиши сообщение..."
-          onkeydown="if(event.key === 'Enter') sendMessage()">
-
-        <button onclick="sendMessage()">
-          Отправить
-        </button>
-      </div>
-
-      <div class="profile-buttons">
-        <button class="secondary-btn"
-                onclick="speakLastMessage()">
-          🔊 Озвучить
-        </button>
-
-        <button class="secondary-btn"
-                onclick="clearChat('${esc(name)}')">
-          🗑 Очистить
-        </button>
-      </div>
-
-    </div>
-  `;
+  container.scrollTop = container.scrollHeight;
 }
 
+function generateChatReply(text) {
+  const message = text.toLowerCase();
 
-// =====================================
-// СЛОВАРЬ БОТА
-// =====================================
-
-const botDictionary = [
-  {
-    keys: ["привет", "здравствуй", "хай"],
-    answers: [
-      "Привет! 😊 Как у тебя дела?",
-      "Рада тебя видеть в виртуальном чате!",
-      "Привет! О чём поговорим?"
-    ]
-  },
-  {
-    keys: ["как дела", "как ты"],
-    answers: [
-      "У меня всё хорошо. А как твой день?",
-      "Спасибо, что спрашиваешь! Расскажи о себе.",
-      "Всё отлично. Чем сегодня занимался?"
-    ]
-  },
-  {
-    keys: ["музыка", "песня"],
-    answers: [
-      "Какую музыку ты обычно слушаешь?",
-      "Интересно! У тебя есть любимая песня?"
-    ]
-  },
-  {
-    keys: ["игра", "играть", "майнкрафт", "гта"],
-    answers: [
-      "Во что ты сейчас играешь?",
-      "Игры — отличная тема для разговора!",
-      "Расскажи о своей любимой игре."
-    ]
-  },
-  {
-    keys: ["пока", "до свидания"],
-    answers: [
-      "До встречи! 😊",
-      "Хорошего дня!",
-      "Буду ждать следующего разговора."
-    ]
-  }
-];
-
-function getBotReply(text) {
-  const normalized = text.toLowerCase();
-
-  for (const item of botDictionary) {
-    if (item.keys.some(key => normalized.includes(key))) {
-      return item.answers[
-        Math.floor(Math.random() * item.answers.length)
-      ];
-    }
+  if (
+    message.includes("привет") ||
+    message.includes("здравств")
+  ) {
+    return "Привет! Рада пообщаться. Как проходит твой день?";
   }
 
-  const defaultReplies = [
-    "Интересно! Расскажи подробнее.",
-    "Я тебя поняла. Что ты думаешь об этом?",
-    "Продолжай, мне интересно.",
-    "Давай поговорим об этом спокойнее.",
-    "Спасибо за сообщение!"
+  if (
+    message.includes("как дела") ||
+    message.includes("настроен")
+  ) {
+    return "У меня всё виртуально хорошо. А какое у тебя сейчас настроение?";
+  }
+
+  if (
+    message.includes("отношен") ||
+    message.includes("любов")
+  ) {
+    return "В отношениях важны уважение, честность, доверие и согласие обоих людей.";
+  }
+
+  if (
+    message.includes("границ") ||
+    message.includes("соглас")
+  ) {
+    return "Личные границы нужно обсуждать спокойно. Согласие должно быть добровольным и взаимным.";
+  }
+
+  if (
+    message.includes("18+") ||
+    message.includes("интим") ||
+    message.includes("секс")
+  ) {
+    return "Такие темы можно обсуждать нейтрально: через уважение, безопасность, согласие и комфорт.";
+  }
+
+  if (
+    message.includes("скуча") ||
+    message.includes("груст")
+  ) {
+    return "Жаль, что тебе грустно. Хочешь рассказать, что произошло?";
+  }
+
+  if (
+    message.includes("спасибо") ||
+    message.includes("благодар")
+  ) {
+    return "Пожалуйста! Мне приятно продолжать разговор.";
+  }
+
+  const replies = [
+    "Интересная мысль. Расскажешь подробнее?",
+    "Я тебя услышала. Что ты думаешь об этом сам?",
+    "Давай обсудим это спокойно.",
+    "Понимаю. А что для тебя здесь самое важное?",
+    "Хорошо, продолжай. Мне интересно.",
+    "Думаю, стоит учитывать чувства и границы обоих людей."
   ];
 
-  return defaultReplies[
-    Math.floor(Math.random() * defaultReplies.length)
+  return replies[
+    Math.floor(Math.random() * replies.length)
   ];
 }
 
-function sendMessage() {
-  const input = document.getElementById("chatInput");
+function sendChatMessage() {
+  const input = $("#chatInput");
 
-  if (!input || !currentActress) return;
+  if (!input || !currentChatName) return;
 
   const text = input.value.trim();
 
   if (!text) return;
 
-  const profile = getProfile(currentActress);
+  const profile = getProfile(currentChatName);
 
-  profile.messages.push({
-    user: true,
-    text
+  profile.chat.push({
+    author: "user",
+    text,
+    date: new Date().toISOString()
   });
 
-  profile.messages.push({
-    user: false,
-    text: getBotReply(text)
-  });
+  const reply = generateChatReply(text);
 
-  saveAll();
+  profile.chat.push({
+    author: "bot",
+    text: reply,
+    date: new Date().toISOString()
+  });
 
   input.value = "";
-  renderChat(currentActress);
-}
-
-function clearChat(name) {
-  if (!confirm("Очистить историю чата?")) return;
-
-  getProfile(name).messages = [];
 
   saveAll();
-  renderChat(name);
+  renderMessages();
 }
 
+function speakText(text) {
+  if (!("speechSynthesis" in window)) {
+    alert("Озвучивание не поддерживается этим браузером.");
+    return;
+  }
 
-// =====================================
-// ГОЛОС
-// =====================================
+  window.speechSynthesis.cancel();
+
+  const utterance = new SpeechSynthesisUtterance(text);
+
+  utterance.lang = settings.language;
+  utterance.rate = settings.rate;
+  utterance.pitch = settings.pitch;
+
+  const voices = speechSynthesis.getVoices();
+
+  if (settings.voice) {
+    const voice = voices.find(
+      (item) => item.name === settings.voice
+    );
+
+    if (voice) {
+      utterance.voice = voice;
+    }
+  }
+
+  speechSynthesis.speak(utterance);
+}
 
 function speakLastMessage() {
-  const profile = getProfile(currentActress);
+  if (!currentChatName) return;
 
-  if (!profile.messages.length) return;
+  const profile = getProfile(currentChatName);
 
-  const message =
-    profile.messages[profile.messages.length - 1];
+  const lastMessage = [...profile.chat]
+    .reverse()
+    .find((message) => message.author === "bot");
 
-  const speech = new SpeechSynthesisUtterance(message.text);
-
-  speech.lang = settings.language || "ru-RU";
-  speech.rate = Number(settings.rate || 1);
-  speech.pitch = Number(settings.pitch || 1);
-
-  speechSynthesis.cancel();
-  speechSynthesis.speak(speech);
+  if (lastMessage) {
+    speakText(lastMessage.text);
+  }
 }
 
-
-// =====================================
-// РАНДОМ
-// =====================================
-
-function randomActress() {
-  const list = allActresses();
-
-  if (!list.length) return;
-
-  const name = list[Math.floor(Math.random() * list.length)];
-
-  openProfile(name);
-}
-
-
-// =====================================
-// ЧЕЛЛЕНДЖИ
-// =====================================
-
-function renderChallenges() {
-  const container =
-    document.getElementById("challengesContent");
-
-  if (!container) return;
-
-  container.innerHTML = `
-    <div class="challenge-card">
-      <h3>💬 Начать разговор</h3>
-      <p>Открой профиль и отправь сообщение боту.</p>
-    </div>
-
-    <div class="challenge-card">
-      <h3>⭐ Избранное</h3>
-      <p>Добавь понравившуюся карточку в избранное.</p>
-    </div>
-
-    <div class="challenge-card">
-      <h3>🎲 Рандом</h3>
-      <p>Открой случайный профиль.</p>
-    </div>
-
-    <div class="challenge-card">
-      <h3>🎬 Видео</h3>
-      <p>Добавь ссылку на видео в профиль.</p>
-    </div>
-  `;
-}
-
-
-// =====================================
-// НАСТРОЙКИ
-// =====================================
+/* =========================
+   Настройки
+========================= */
 
 function renderPreferences() {
-  const container =
-    document.getElementById("preferencesContent");
+  const container = $("#preferencesContent");
 
   if (!container) return;
 
-  container.innerHTML = `
-    <div class="preference-card">
-      <h3>Стиль общения</h3>
+  const voices = "speechSynthesis" in window
+    ? speechSynthesis.getVoices()
+    : [];
 
-      <select id="chatStyle">
+  container.innerHTML = `
+    <h2>Настройки</h2>
+
+    <label>
+      Стиль общения
+      <select id="styleSetting">
         <option value="friendly">Дружелюбный</option>
         <option value="calm">Спокойный</option>
-        <option value="funny">Весёлый</option>
+        <option value="short">Короткие ответы</option>
       </select>
-    </div>
+    </label>
 
-    <div class="preference-card">
-      <h3>Язык голоса</h3>
-
-      <select id="voiceLanguage">
+    <label>
+      Язык озвучивания
+      <select id="languageSetting">
         <option value="ru-RU">Русский</option>
         <option value="en-US">English</option>
         <option value="de-DE">Deutsch</option>
       </select>
-    </div>
+    </label>
 
-    <div class="preference-card">
-      <h3>Скорость речи</h3>
-
+    <label>
+      Скорость речи
       <input
+        id="rateSetting"
         type="range"
-        id="voiceRate"
         min="0.5"
         max="2"
         step="0.1"
-        value="${settings.rate || 1}">
-    </div>
+        value="${settings.rate}"
+      >
+    </label>
 
-    <div class="preference-card">
-      <h3>Высота голоса</h3>
-
+    <label>
+      Высота голоса
       <input
+        id="pitchSetting"
         type="range"
-        id="voicePitch"
         min="0.5"
         max="2"
         step="0.1"
-        value="${settings.pitch || 1}">
-    </div>
+        value="${settings.pitch}"
+      >
+    </label>
 
-    <button class="primary-btn"
-            onclick="saveSettings()">
-      💾 Сохранить
+    <label>
+      Голос
+      <select id="voiceSetting">
+        <option value="">Автоматический</option>
+        ${voices.map((voice) => `
+          <option value="${escapeHTML(voice.name)}">
+            ${escapeHTML(voice.name)}
+          </option>
+        `).join("")}
+      </select>
+    </label>
+
+    <button class="primary" id="savePreferencesButton">
+      Сохранить настройки
     </button>
   `;
+
+  $("#styleSetting").value = settings.style;
+  $("#languageSetting").value = settings.language;
+  $("#voiceSetting").value = settings.voice;
+
+  $("#savePreferencesButton").addEventListener(
+    "click",
+    () => {
+      settings.style = $("#styleSetting").value;
+      settings.language = $("#languageSetting").value;
+      settings.rate = Number($("#rateSetting").value);
+      settings.pitch = Number($("#pitchSetting").value);
+      settings.voice = $("#voiceSetting").value;
+
+      saveAll();
+
+      alert("Настройки сохранены.");
+    }
+  );
 }
 
-function saveSettings() {
-  settings = {
-    style: document.getElementById("chatStyle").value,
-    language: document.getElementById("voiceLanguage").value,
-    rate: document.getElementById("voiceRate").value,
-    pitch: document.getElementById("voicePitch").value
-  };
+/* =========================
+   Челленджи
+========================= */
 
-  saveAll();
+function renderChallenges() {
+  const container = $("#challengesContent");
 
-  alert("Настройки сохранены!");
+  if (!container) return;
+
+  const challenges = [
+    "Написать доброжелательное приветствие.",
+    "Задать собеседнику три интересных вопроса.",
+    "Рассказать о любимой игре.",
+    "Обсудить личные границы.",
+    "Придумать совместный план на выходные.",
+    "Рассказать о своей мечте.",
+    "Поделиться любимым фильмом.",
+    "Придумать виртуальное путешествие."
+  ];
+
+  const challenge =
+    challenges[Math.floor(Math.random() * challenges.length)];
+
+  container.innerHTML = `
+    <h2>Челлендж дня</h2>
+
+    <div class="challenge-card">
+      <p>${escapeHTML(challenge)}</p>
+
+      <button class="primary" id="newChallengeButton">
+        Новый челлендж
+      </button>
+    </div>
+  `;
+
+  $("#newChallengeButton").addEventListener(
+    "click",
+    renderChallenges
+  );
 }
 
+/* =========================
+   Поиск
+========================= */
 
-// =====================================
-// ДОБАВЛЯЕМ КНОПКУ СОЗДАНИЯ КАРТОЧКИ
-// =====================================
+const searchInput = $("#searchInput");
 
-function addCreateButton() {
-  const page = document.getElementById("catalogPage");
-
-  if (!page || document.getElementById("createCardButton")) {
-    return;
-  }
-
-  const button = document.createElement("button");
-
-  button.id = "createCardButton";
-  button.className = "primary-btn";
-  button.textContent = "➕ Создать карточку";
-  button.style.marginBottom = "15px";
-  button.onclick = openCreateCard;
-
-  page.insertBefore(button, page.children[1]);
+if (searchInput) {
+  searchInput.addEventListener("input", (event) => {
+    searchActresses(event.target.value);
+  });
 }
 
+/* =========================
+   Случайный профиль
+========================= */
 
-// =====================================
-// ЗАПУСК
-// =====================================
+const randomButton = $("#randomButton");
+
+if (randomButton) {
+  randomButton.addEventListener("click", () => {
+    const list = allActresses();
+
+    if (!list.length) return;
+
+    const randomProfile =
+      list[Math.floor(Math.random() * list.length)];
+
+    openProfile(randomProfile.name);
+  });
+}
+
+/* =========================
+   Инициализация
+========================= */
+
+if ("speechSynthesis" in window) {
+  speechSynthesis.addEventListener("voiceschanged", () => {
+    if ($("#preferencesPage")?.classList.contains("active")) {
+      renderPreferences();
+    }
+  });
+}
 
 addCreateButton();
 renderCatalog();
