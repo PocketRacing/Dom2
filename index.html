@@ -1,450 +1,1373 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-
-  <meta name="viewport"
-        content="width=device-width, initial-scale=1.0">
-
-  <meta name="theme-color" content="#111111">
-
-  <title>AdultStars</title>
-
-  <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    :root {
-      --bg: #0f0f0f;
-      --panel: #1c1c1c;
-      --panel2: #292929;
-      --orange: #ff9900;
-      --text: #ffffff;
-      --muted: #999999;
-      --border: #363636;
-    }
-
-    body {
-      background: var(--bg);
-      color: var(--text);
-      font-family: Arial, sans-serif;
-      min-height: 100vh;
-      padding-bottom: 85px;
-    }
-
-    button,
-    input,
-    textarea,
-    select {
-      font: inherit;
-    }
-
-    button {
-      cursor: pointer;
-    }
-
-    .header {
-      position: sticky;
-      top: 0;
-      z-index: 10;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 16px;
-      background: #181818;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .logo {
-      font-size: 25px;
-      font-weight: bold;
-    }
-
-    .logo span {
-      color: var(--orange);
-    }
-
-    .header button {
-      border: none;
-      border-radius: 50%;
-      background: var(--orange);
-      width: 42px;
-      height: 42px;
-      font-size: 20px;
-    }
-
-    .search {
-      padding: 15px;
-    }
-
-    .search input {
-      width: 100%;
-      padding: 14px;
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      background: var(--panel);
-      color: white;
-      outline: none;
-    }
-
-    main {
-      max-width: 1200px;
-      margin: auto;
-      padding: 0 15px;
-    }
-
-    h1 {
-      font-size: 24px;
-      margin: 12px 0 20px;
-    }
-
-    .page {
-      display: none;
-    }
-
-    .page.active {
-      display: block;
-    }
-
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 12px;
-    }
-
-    .card {
-      overflow: hidden;
-      background: var(--panel);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-    }
-
-    .card-photo {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      aspect-ratio: 1;
-      background: linear-gradient(135deg, #303030, #101010);
-      color: var(--orange);
-      font-size: 34px;
-      font-weight: bold;
-    }
-
-    .card-photo img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-
-    .card-info {
-      padding: 10px;
-    }
-
-    .card-name {
-      min-height: 35px;
-      font-size: 14px;
-      font-weight: bold;
-    }
-
-    .actions {
-      display: flex;
-      gap: 6px;
-      margin-top: 10px;
-    }
-
-    .actions button,
-    .primary,
-    .secondary {
-      padding: 10px;
-      border: none;
-      border-radius: 8px;
-      font-size: 13px;
-    }
-
-    .actions button:first-child,
-    .primary {
-      background: var(--orange);
-      color: #111;
-    }
-
-    .actions button:last-child,
-    .secondary {
-      background: var(--panel2);
-      color: white;
-      border: 1px solid var(--border);
-    }
-
-    .profile-box,
-    .chat-box,
-    .setting-box {
-      padding: 16px;
-      background: var(--panel);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-    }
-
-    .profile-photo {
-      width: 170px;
-      height: 170px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin: 0 auto 18px;
-      overflow: hidden;
-      border-radius: 50%;
-      background: var(--panel2);
-      color: var(--orange);
-      font-size: 40px;
-      font-weight: bold;
-    }
-
-    .profile-photo img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-
-    .profile-box h2 {
-      text-align: center;
-      margin-bottom: 18px;
-    }
-
-    label {
-      display: block;
-      margin: 15px 0 6px;
-      color: var(--muted);
-      font-size: 13px;
-    }
-
-    input,
-    textarea,
-    select {
-      width: 100%;
-      padding: 12px;
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      background: #101010;
-      color: white;
-      outline: none;
-    }
-
-    textarea {
-      min-height: 85px;
-      resize: vertical;
-    }
-
-    .profile-buttons {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-top: 18px;
-    }
-
-    .chat-messages {
-      max-height: 450px;
-      min-height: 280px;
-      overflow-y: auto;
-      padding: 10px 0;
-    }
-
-    .message {
-      max-width: 85%;
-      margin-bottom: 10px;
-      padding: 11px;
-      border-radius: 12px;
-      overflow-wrap: break-word;
-    }
-
-    .message.user {
-      margin-left: auto;
-      background: var(--orange);
-      color: #111;
-    }
-
-    .message.bot {
-      background: var(--panel2);
-    }
-
-    .chat-input {
-      display: flex;
-      gap: 8px;
-      margin-top: 10px;
-    }
-
-    .chat-input input {
-      min-width: 0;
-    }
-
-    .chat-input button {
-      padding: 10px;
-      border: none;
-      border-radius: 8px;
-      background: var(--orange);
-      color: #111;
-    }
-
-    .notice {
-      margin: 12px 0;
-      padding: 12px;
-      border-radius: 8px;
-      background: #302600;
-      color: #ffd166;
-      font-size: 13px;
-    }
-
-    .empty {
-      padding: 30px 10px;
-      color: var(--muted);
-      text-align: center;
-    }
-
-    .bottom-nav {
-      position: fixed;
-      right: 0;
-      bottom: 0;
-      left: 0;
-      z-index: 20;
-      display: flex;
-      justify-content: space-around;
-      padding: 8px 3px;
-      background: #181818;
-      border-top: 1px solid var(--border);
-    }
-
-    .bottom-nav button {
-      display: flex;
-      flex: 1;
-      flex-direction: column;
-      align-items: center;
-      gap: 4px;
-      padding: 5px 0;
-      border: none;
-      background: none;
-      color: #bbb;
-      font-size: 18px;
-    }
-
-    .bottom-nav span {
-      font-size: 10px;
-    }
-
-    @media (min-width: 600px) {
-      .grid {
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-      }
-    }
-
-    @media (min-width: 900px) {
-      .grid {
-        grid-template-columns: repeat(5, minmax(0, 1fr));
-      }
-
-      .bottom-nav {
-        right: auto;
-        left: 50%;
-        width: 650px;
-        transform: translateX(-50%);
-        border-radius: 15px 15px 0 0;
-      }
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AdultStars</title>
+<style>
+*{box-sizing:border-box}
+body{
+    margin:0;
+    font-family:Arial,sans-serif;
+    background:#090909;
+    color:#fff;
+}
+button,input,textarea,select{font:inherit}
+button{cursor:pointer}
+header{
+    position:sticky;
+    top:0;
+    z-index:20;
+    background:#111;
+    border-bottom:1px solid #292929;
+    padding:14px;
+}
+.header-row{
+    max-width:1100px;
+    margin:auto;
+    display:flex;
+    gap:10px;
+    align-items:center;
+}
+.logo{
+    color:#ff7a00;
+    font-size:22px;
+    font-weight:800;
+    white-space:nowrap;
+}
+.search{
+    flex:1;
+    background:#1b1b1b;
+    color:white;
+    border:1px solid #333;
+    border-radius:12px;
+    padding:11px 14px;
+    outline:none;
+}
+.icon-btn,.orange-btn{
+    border:0;
+    border-radius:11px;
+    padding:10px 13px;
+    background:#ff7a00;
+    color:#111;
+    font-weight:700;
+}
+.dark-btn{
+    border:1px solid #333;
+    background:#191919;
+    color:#fff;
+    border-radius:10px;
+    padding:9px 12px;
+}
+.container{
+    max-width:1100px;
+    margin:auto;
+    padding:18px 14px 100px;
+}
+.top-actions{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+    margin-bottom:18px;
+}
+.grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(210px,1fr));
+    gap:14px;
+}
+.card{
+    background:#141414;
+    border:1px solid #292929;
+    border-radius:16px;
+    overflow:hidden;
+    transition:.2s;
+}
+.card:hover{
+    transform:translateY(-2px);
+    border-color:#ff7a00;
+}
+.card-photo{
+    width:100%;
+    height:250px;
+    object-fit:cover;
+    background:#222;
+    display:block;
+}
+.card-body{padding:13px}
+.card-name{
+    font-size:18px;
+    font-weight:800;
+}
+.card-ru{
+    margin-top:3px;
+    color:#aaa;
+    font-size:12px;
+}
+.card-meta{
+    color:#999;
+    font-size:12px;
+    margin-top:8px;
+}
+.card-buttons{
+    display:flex;
+    gap:7px;
+    margin-top:12px;
+}
+.card-buttons button{
+    flex:1;
+}
+.empty{
+    text-align:center;
+    padding:50px 20px;
+    color:#888;
+}
+.modal-bg{
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.78);
+    z-index:100;
+    display:none;
+    overflow:auto;
+    padding:20px;
+}
+.modal-bg.show{display:block}
+.modal{
+    max-width:720px;
+    margin:30px auto;
+    background:#141414;
+    border:1px solid #333;
+    border-radius:18px;
+    padding:20px;
+}
+.modal h2{
+    margin-top:0;
+    color:#ff7a00;
+}
+.form-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:12px;
+}
+.field{margin-bottom:12px}
+.field.full{grid-column:1/-1}
+.field label{
+    display:block;
+    color:#bbb;
+    font-size:13px;
+    margin-bottom:6px;
+}
+.field input,
+.field textarea,
+.field select{
+    width:100%;
+    background:#0d0d0d;
+    color:#fff;
+    border:1px solid #333;
+    border-radius:10px;
+    padding:11px;
+    outline:none;
+}
+.field textarea{
+    min-height:90px;
+    resize:vertical;
+}
+.modal-actions{
+    display:flex;
+    gap:8px;
+    justify-content:flex-end;
+    margin-top:15px;
+    flex-wrap:wrap;
+}
+.tabs{
+    display:flex;
+    gap:7px;
+    margin-bottom:18px;
+    overflow-x:auto;
+}
+.tab{
+    white-space:nowrap;
+    border:1px solid #333;
+    background:#151515;
+    color:#aaa;
+    padding:9px 13px;
+    border-radius:10px;
+}
+.tab.active{
+    background:#ff7a00;
+    color:#111;
+    border-color:#ff7a00;
+}
+.profile-head{
+    display:flex;
+    gap:20px;
+    align-items:flex-start;
+}
+.profile-photo{
+    width:180px;
+    height:220px;
+    object-fit:cover;
+    border-radius:15px;
+    background:#222;
+}
+.profile-info{flex:1}
+.profile-original{
+    font-size:27px;
+    font-weight:800;
+}
+.profile-russian{
+    color:#aaa;
+    margin-top:4px;
+}
+.tags{
+    display:flex;
+    flex-wrap:wrap;
+    gap:6px;
+    margin-top:12px;
+}
+.tag{
+    background:#222;
+    color:#bbb;
+    border-radius:20px;
+    padding:6px 9px;
+    font-size:12px;
+}
+.section{
+    margin-top:22px;
+    background:#111;
+    border:1px solid #292929;
+    border-radius:15px;
+    padding:15px;
+}
+.section h3{
+    margin-top:0;
+    color:#ff7a00;
+}
+.link-list a{
+    display:block;
+    color:#ff963d;
+    margin:7px 0;
+    word-break:break-all;
+}
+.chat{
+    max-width:750px;
+    margin:auto;
+}
+.chat-window{
+    height:500px;
+    overflow-y:auto;
+    background:#101010;
+    border:1px solid #292929;
+    border-radius:15px;
+    padding:14px;
+}
+.message{
+    max-width:80%;
+    padding:10px 13px;
+    margin:8px 0;
+    border-radius:14px;
+    line-height:1.4;
+}
+.message.user{
+    margin-left:auto;
+    background:#ff7a00;
+    color:#111;
+}
+.message.bot{
+    background:#222;
+    color:#fff;
+}
+.chat-input{
+    display:flex;
+    gap:8px;
+    margin-top:10px;
+}
+.chat-input input{
+    flex:1;
+    background:#171717;
+    color:white;
+    border:1px solid #333;
+    border-radius:12px;
+    padding:12px;
+}
+.dictionary-list{
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+}
+.dictionary-item{
+    background:#111;
+    border:1px solid #292929;
+    border-radius:12px;
+    padding:12px;
+}
+.dictionary-item strong{color:#ff963d}
+.dictionary-item small{
+    display:block;
+    color:#999;
+    margin-top:5px;
+}
+.dictionary-actions{
+    margin-top:8px;
+    display:flex;
+    gap:7px;
+}
+.bottom-nav{
+    position:fixed;
+    bottom:0;
+    left:0;
+    right:0;
+    background:#111;
+    border-top:1px solid #292929;
+    display:flex;
+    justify-content:center;
+    gap:8px;
+    padding:9px;
+    z-index:30;
+}
+.bottom-nav button{
+    background:#191919;
+    color:#aaa;
+    border:1px solid #292929;
+    border-radius:10px;
+    padding:9px 13px;
+}
+.bottom-nav button.active{
+    color:#111;
+    background:#ff7a00;
+}
+@media(max-width:650px){
+    .header-row{flex-wrap:wrap}
+    .logo{width:100%}
+    .form-grid{grid-template-columns:1fr}
+    .field.full{grid-column:auto}
+    .profile-head{flex-direction:column}
+    .profile-photo{width:100%;height:300px}
+    .chat-window{height:430px}
+}
+</style>
 </head>
-
 <body>
-
-  <header class="header">
-    <div class="logo">
-      Adult<span>Stars</span>
+<header>
+    <div class="header-row">
+        <div class="logo">AdultStars</div>
+        <input id="search" class="search" placeholder="Поиск анкеты..." oninput="render()">
+        <button class="icon-btn" onclick="randomProfile()">🎲</button>
     </div>
-
-    <button onclick="randomActress()">🎲</button>
-  </header>
-
-  <div class="search">
-    <input
-      id="searchInput"
-      type="search"
-      placeholder="Поиск актрисы..."
-      oninput="searchActresses()">
-  </div>
-
-  <main>
-
-    <section id="catalogPage" class="page active">
-      <h1>Каталог</h1>
-
-      <div id="catalogActions"></div>
-
-      <div id="actressesGrid" class="grid"></div>
+</header>
+<div class="container">
+    <div class="tabs">
+        <button id="tabProfiles" class="tab active" onclick="showPage('profiles')">Анкеты</button>
+        <button id="tabChat" class="tab" onclick="showPage('chat')">💬 Чат</button>
+        <button id="tabDictionary" class="tab" onclick="showPage('dictionary')">📖 Словарь</button>
+    </div>
+    <section id="profilesPage">
+        <div class="top-actions">
+            <button class="orange-btn" onclick="openProfileEditor()">➕ Новая анкета</button>
+            <button class="dark-btn" onclick="showFavorites()">⭐ Избранное</button>
+            <button class="dark-btn" onclick="showAll()">Все анкеты</button>
+        </div>
+        <div id="profilesGrid" class="grid"></div>
     </section>
-
-    <section id="favoritesPage" class="page">
-      <h1>Избранное</h1>
-
-      <div id="favoritesGrid" class="grid"></div>
+    <section id="chatPage" style="display:none">
+        <div class="chat">
+            <div class="section">
+                <h2 style="margin-top:0">💬 Чат</h2>
+                <p style="color:#999">
+                    Ответы формируются из твоего собственного словаря и встроенных нейтральных фраз.
+                </p>
+            </div>
+            <div id="chatWindow" class="chat-window"></div>
+            <div class="chat-input">
+                <input id="chatInput" placeholder="Напиши сообщение..." onkeydown="if(event.key==='Enter')sendMessage()">
+                <button class="orange-btn" onclick="sendMessage()">Отправить</button>
+            </div>
+        </div>
     </section>
-
-    <section id="profilePage" class="page">
-      <button class="secondary" onclick="showPage('catalog')">
-        ← Назад
-      </button>
-
-      <div id="profileContent" style="margin-top:15px;"></div>
+    <section id="dictionaryPage" style="display:none">
+        <div class="top-actions">
+            <button class="orange-btn" onclick="openDictionaryEditor()">➕ Добавить фразу</button>
+            <button class="dark-btn" onclick="resetDictionary()">↩ Восстановить встроенный словарь</button>
+        </div>
+        <div class="section">
+            <h2 style="margin-top:0">📖 Мой словарь</h2>
+            <p style="color:#888">
+                Добавляй свои слова, фразы и ответы. Они сохраняются в браузере.
+            </p>
+            <div id="dictionaryList" class="dictionary-list"></div>
+        </div>
     </section>
-
-    <section id="chatPage" class="page">
-      <button class="secondary" onclick="showPage('catalog')">
-        ← Назад
-      </button>
-
-      <div id="chatContent" style="margin-top:15px;"></div>
-    </section>
-
-    <section id="challengesPage" class="page">
-      <h1>Челленджи</h1>
-
-      <div id="challengesContent"></div>
-    </section>
-
-    <section id="preferencesPage" class="page">
-      <h1>Настройки</h1>
-
-      <div id="preferencesContent"></div>
-    </section>
-
-  </main>
-
-  <nav class="bottom-nav">
-    <button onclick="showPage('catalog')">
-      🏠
-      <span>Главная</span>
-    </button>
-
-    <button onclick="showPage('favorites')">
-      ⭐
-      <span>Избранное</span>
-    </button>
-
-    <button onclick="randomActress()">
-      🎲
-      <span>Рандом</span>
-    </button>
-
-    <button onclick="showPage('challenges')">
-      🏆
-      <span>Задания</span>
-    </button>
-
-    <button onclick="showPage('preferences')">
-      ⚙️
-      <span>Настройки</span>
-    </button>
-  </nav>
-
-  <script src="app.js"></script>
-
+</div>
+<div class="bottom-nav">
+    <button id="navProfiles" class="active" onclick="showPage('profiles')">👤 Анкеты</button>
+    <button id="navChat" onclick="showPage('chat')">💬 Чат</button>
+    <button id="navDictionary" onclick="showPage('dictionary')">📖 Словарь</button>
+</div>
+<!-- PROFILE VIEW -->
+<div id="profileModal" class="modal-bg">
+    <div class="modal">
+        <div id="profileContent"></div>
+        <div class="modal-actions">
+            <button class="dark-btn" onclick="closeModal('profileModal')">Закрыть</button>
+            <button class="orange-btn" onclick="editCurrentProfile()">✏️ Редактировать</button>
+        </div>
+    </div>
+</div>
+<!-- PROFILE EDITOR -->
+<div id="profileEditorModal" class="modal-bg">
+    <div class="modal">
+        <h2 id="profileEditorTitle">Новая анкета</h2>
+        <div class="form-grid">
+            <div class="field">
+                <label>Имя / оригинальное название</label>
+                <input id="pName">
+            </div>
+            <div class="field">
+                <label>Русское название</label>
+                <input id="pRuName">
+            </div>
+            <div class="field">
+                <label>Страна</label>
+                <input id="pCountry">
+            </div>
+            <div class="field">
+                <label>Дата / год</label>
+                <input id="pDebut">
+            </div>
+            <div class="field full">
+                <label>Описание</label>
+                <textarea id="pDescription"></textarea>
+            </div>
+            <div class="field full">
+                <label>Теги через запятую</label>
+                <input id="pTags" placeholder="например: актриса, модель, интервью">
+            </div>
+            <div class="field full">
+                <label>Сайты — каждый с новой строки</label>
+                <textarea id="pWebsites" placeholder="https://example.com"></textarea>
+            </div>
+            <div class="field full">
+                <label>Видео — каждое с новой строки</label>
+                <textarea id="pVideos" placeholder="https://youtube.com/..."></textarea>
+            </div>
+            <div class="field full">
+                <label>Фото</label>
+                <input type="file" id="pPhoto" accept="image/*">
+            </div>
+        </div>
+        <div class="modal-actions">
+            <button class="dark-btn" onclick="closeModal('profileEditorModal')">Отмена</button>
+            <button class="orange-btn" onclick="saveProfile()">💾 Сохранить</button>
+        </div>
+    </div>
+</div>
+<!-- DICTIONARY EDITOR -->
+<div id="dictionaryEditorModal" class="modal-bg">
+    <div class="modal">
+        <h2 id="dictionaryEditorTitle">Новая фраза</h2>
+        <div class="field">
+            <label>Что должен написать пользователь</label>
+            <input id="dictQuestion" placeholder="например: привет">
+        </div>
+        <div class="field">
+            <label>Ответ чата</label>
+            <textarea id="dictAnswer" placeholder="Например: Привет! Рад тебя видеть 😊"></textarea>
+        </div>
+        <div class="field">
+            <label>Дополнительные варианты ответа</label>
+            <textarea id="dictVariants" placeholder="Каждый вариант с новой строки"></textarea>
+        </div>
+        <div class="modal-actions">
+            <button class="dark-btn" onclick="closeModal('dictionaryEditorModal')">Отмена</button>
+            <button class="orange-btn" onclick="saveDictionaryItem()">💾 Сохранить</button>
+        </div>
+    </div>
+</div>
+<script>
+/* =========================
+   ДАННЫЕ
+========================= */
+const baseNames = [
+"Abella Danger","Angela White","Ariana Marie","Asa Akira","Autumn Falls",
+"Ava Addams","Briana Banks","Brandi Love","Brooklyn Chase","Carmen Caliente",
+"Casey Calvert","Chanel Preston","Cindy Starfall","Dani Daniels","Emily Willis",
+"Eva Elfie","Gianna Dior","Gina Valentina","Jasmine Sherni","Jenna Haze",
+"Jessa Rhodes","Jessica Rizzo","Jill Kassidy","Julia Ann","Kendra Lust",
+"Kenzie Reeves","Kimmy Granger","Lana Rhoades","Lena Paul","Lexi Luna",
+"Lily Ivy","Mia Malkova","Mia Melano","Molly Little","Monica Bellucci",
+"Mia Khalifa","Nina North","Nicole Aniston","Nikki Benz","Olivia Austin",
+"Piper Perri","Riley Reid","Romi Rain","Sasha Grey","Scarlett Sage",
+"Sky Bri","Sophie Dee","Stoya","Sybil Stallone","Tori Black",
+"Vanna Bardot","Victoria June","Whitney Wright","Wifey","Abby Lee Brazil",
+"Adriana Chechik","Alexis Texas","Allie Haze","Amarna Miller","Amy Anderssen",
+"Anna Bell Peaks","April O'Neil","Aubrey Kate","Bella Rolland","Blake Blossom",
+"Bonnie Rotten","Bunny Colby","Charlotte Sartre","Christen Courtney","Clara Mia",
+"Cory Chase","Daisy Stone","Elsa Jean","Emma Hix","Erin Everheart",
+"Gia Derza","Harley Dean","Isiah Maxwell","Jade Kush","Jayden Cole",
+"Jillian Janson","Kali Roses","Katrina Jade","Kira Noir","Kylie Page",
+"Lacey Lennon","Lauren Phillips","Lexi Lore","Mackenzie Moss","Madison Ivy",
+"Mandy Muse","Marley Brinx","Natalia Starr","Nikki Hill","Penny Barber",
+"Rachel Starr","Sarah Vandella","Valentina Nappi","Veronica Avluv"
+];
+const russianNames = {
+"Abella Danger":"Абелла Дэнджер",
+"Angela White":"Анджела Уайт",
+"Ariana Marie":"Ариана Мари",
+"Asa Akira":"Аса Акира",
+"Autumn Falls":"Отум Фоллс",
+"Ava Addams":"Ава Аддамс",
+"Briana Banks":"Бриана Бэнкс",
+"Brandi Love":"Бренди Лав",
+"Brooklyn Chase":"Бруклин Чейз",
+"Carmen Caliente":"Кармен Калиенте",
+"Casey Calvert":"Кейси Калверт",
+"Chanel Preston":"Шанель Престон",
+"Cindy Starfall":"Синди Старфолл",
+"Dani Daniels":"Дани Дэниэлс",
+"Emily Willis":"Эмили Уиллис",
+"Eva Elfie":"Ева Элфи",
+"Gianna Dior":"Джанна Диор",
+"Gina Valentina":"Джина Валентина",
+"Jasmine Sherni":"Джасмин Шерни",
+"Jenna Haze":"Дженна Хейз",
+"Jessa Rhodes":"Джесса Роудс",
+"Jessica Rizzo":"Джессика Риццо",
+"Jill Kassidy":"Джилл Кэссиди",
+"Julia Ann":"Джулия Энн",
+"Kendra Lust":"Кендра Ласт",
+"Kenzie Reeves":"Кензи Ривз",
+"Kimmy Granger":"Кимми Грейнджер",
+"Lana Rhoades":"Лана Роудс",
+"Lena Paul":"Лена Пол",
+"Lexi Luna":"Лекси Луна",
+"Lily Ivy":"Лили Айви",
+"Mia Malkova":"Миа Малкова",
+"Mia Melano":"Миа Мелано",
+"Molly Little":"Молли Литтл",
+"Monica Bellucci":"Моника Беллуччи",
+"Mia Khalifa":"Миа Халифа",
+"Nina North":"Нина Норт",
+"Nicole Aniston":"Николь Энистон",
+"Nikki Benz":"Никки Бенц",
+"Olivia Austin":"Оливия Остин",
+"Piper Perri":"Пайпер Перри",
+"Riley Reid":"Райли Рид",
+"Romi Rain":"Роми Рэйн",
+"Sasha Grey":"Саша Грей",
+"Scarlett Sage":"Скарлетт Сейдж",
+"Sky Bri":"Скай Бри",
+"Sophie Dee":"Софи Ди",
+"Stoya":"Стойя",
+"Sybil Stallone":"Сибил Сталлоне",
+"Tori Black":"Тори Блэк",
+"Vanna Bardot":"Ванна Бардо",
+"Victoria June":"Виктория Джун",
+"Whitney Wright":"Уитни Райт",
+"Wifey":"Вайфи",
+"Abby Lee Brazil":"Эбби Ли Бразил",
+"Adriana Chechik":"Адриана Чечик",
+"Alexis Texas":"Алексис Тексас",
+"Allie Haze":"Элли Хейз",
+"Amarna Miller":"Амарна Миллер",
+"Amy Anderssen":"Эми Андерссен",
+"Anna Bell Peaks":"Анна Белл Пикс",
+"April O'Neil":"Эйприл О'Нил",
+"Aubrey Kate":"Обри Кейт",
+"Bella Rolland":"Белла Ролланд",
+"Blake Blossom":"Блейк Блоссом",
+"Bonnie Rotten":"Бонни Роттен",
+"Bunny Colby":"Банни Колби",
+"Charlotte Sartre":"Шарлотта Сартр",
+"Christen Courtney":"Кристен Кортни",
+"Clara Mia":"Клара Миа",
+"Cory Chase":"Кори Чейз",
+"Daisy Stone":"Дейзи Стоун",
+"Elsa Jean":"Эльза Джин",
+"Emma Hix":"Эмма Хикс",
+"Erin Everheart":"Эрин Эверхарт",
+"Gia Derza":"Джиа Дерза",
+"Harley Dean":"Харли Дин",
+"Isiah Maxwell":"Айзайя Максвелл",
+"Jade Kush":"Джейд Куш",
+"Jayden Cole":"Джейден Коул",
+"Jillian Janson":"Джиллиан Джэнсон",
+"Kali Roses":"Кали Роузс",
+"Katrina Jade":"Катрина Джейд",
+"Kira Noir":"Кира Нуар",
+"Kylie Page":"Кайли Пейдж",
+"Lacey Lennon":"Лейси Леннон",
+"Lauren Phillips":"Лорен Филлипс",
+"Lexi Lore":"Лекси Лор",
+"Mackenzie Moss":"Маккензи Мосс",
+"Madison Ivy":"Мэдисон Айви",
+"Mandy Muse":"Мэнди Мьюз",
+"Marley Brinx":"Марли Бринкс",
+"Natalia Starr":"Наталия Старр",
+"Nikki Hill":"Никки Хилл",
+"Penny Barber":"Пенни Барбер",
+"Rachel Starr":"Рэйчел Старр",
+"Sarah Vandella":"Сара Ванделла",
+"Valentina Nappi":"Валентина Наппи",
+"Veronica Avluv":"Вероника Авлав"
+};
+/* =========================
+   ХРАНИЛИЩЕ
+========================= */
+let profiles = JSON.parse(localStorage.getItem("adultstars_profiles") || "{}");
+let favorites = JSON.parse(localStorage.getItem("adultstars_favorites") || "[]");
+let dictionary = JSON.parse(localStorage.getItem("adultstars_dictionary") || "[]");
+let currentProfileName = null;
+let editingProfileName = null;
+let editingDictionaryIndex = null;
+let favoritesOnly = false;
+/* =========================
+   ВСТРОЕННЫЕ АНКЕТЫ
+========================= */
+function defaultProfile(name){
+    return {
+        name:name,
+        ruName:russianNames[name] || "",
+        country:"—",
+        debut:"—",
+        description:"Профиль пока не заполнен. Его можно отредактировать.",
+        tags:["профиль"],
+        websites:[],
+        videos:[],
+        photo:"",
+        custom:false
+    };
+}
+for(const name of baseNames){
+    if(!profiles[name]){
+        profiles[name]=defaultProfile(name);
+    }else{
+        profiles[name]=normalizeProfile(profiles[name],name);
+    }
+}
+saveProfiles();
+function normalizeProfile(p,name){
+    return {
+        ...defaultProfile(name),
+        ...p,
+        name:name,
+        ruName:p.ruName || russianNames[name] || "",
+        tags:Array.isArray(p.tags)?p.tags:[],
+        websites:Array.isArray(p.websites)?p.websites:[],
+        videos:Array.isArray(p.videos)?p.videos:[],
+        custom:!!p.custom
+    };
+}
+function saveProfiles(){
+    localStorage.setItem("adultstars_profiles",JSON.stringify(profiles));
+}
+function saveFavorites(){
+    localStorage.setItem("adultstars_favorites",JSON.stringify(favorites));
+}
+/* =========================
+   СТРАНИЦЫ
+========================= */
+function showPage(page){
+    document.getElementById("profilesPage").style.display =
+        page==="profiles" ? "block":"none";
+    document.getElementById("chatPage").style.display =
+        page==="chat" ? "block":"none";
+    document.getElementById("dictionaryPage").style.display =
+        page==="dictionary" ? "block":"none";
+    document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));
+    if(page==="profiles"){
+        document.getElementById("tabProfiles").classList.add("active");
+    }
+    if(page==="chat"){
+        document.getElementById("tabChat").classList.add("active");
+        loadChat();
+    }
+    if(page==="dictionary"){
+        document.getElementById("tabDictionary").classList.add("active");
+        renderDictionary();
+    }
+    document.querySelectorAll(".bottom-nav button").forEach(x=>x.classList.remove("active"));
+    if(page==="profiles") document.getElementById("navProfiles").classList.add("active");
+    if(page==="chat") document.getElementById("navChat").classList.add("active");
+    if(page==="dictionary") document.getElementById("navDictionary").classList.add("active");
+}
+/* =========================
+   КАРТОЧКИ
+========================= */
+function render(){
+    const grid=document.getElementById("profilesGrid");
+    const query=document.getElementById("search").value.toLowerCase().trim();
+    let list=Object.values(profiles);
+    if(favoritesOnly){
+        list=list.filter(p=>favorites.includes(p.name));
+    }
+    if(query){
+        list=list.filter(p=>
+            p.name.toLowerCase().includes(query) ||
+            (p.ruName||"").toLowerCase().includes(query) ||
+            (p.country||"").toLowerCase().includes(query) ||
+            (p.tags||[]).join(" ").toLowerCase().includes(query)
+        );
+    }
+    if(!list.length){
+        grid.innerHTML='<div class="empty">Ничего не найдено</div>';
+        return;
+    }
+    grid.innerHTML=list.map(p=>{
+        const isFav=favorites.includes(p.name);
+        return `
+        <article class="card">
+            ${
+                p.photo
+                ? `<img class="card-photo" src="${p.photo}" alt="">`
+                : `<div class="card-photo" style="display:flex;align-items:center;justify-content:center;font-size:55px">👤</div>`
+            }
+            <div class="card-body">
+                <div class="card-name">${escapeHTML(p.name)}</div>
+                ${
+                    p.ruName
+                    ? `<div class="card-ru">${escapeHTML(p.ruName)}</div>`
+                    : ""
+                }
+                <div class="card-meta">
+                    ${escapeHTML(p.country || "—")}
+                </div>
+                <div class="card-buttons">
+                    <button class="orange-btn" onclick="openProfile('${escapeAttr(p.name)}')">
+                        Открыть
+                    </button>
+                    <button class="dark-btn" onclick="toggleFavorite('${escapeAttr(p.name)}')">
+                        ${isFav?"★":"☆"}
+                    </button>
+                </div>
+            </div>
+        </article>`;
+    }).join("");
+}
+function showAll(){
+    favoritesOnly=false;
+    render();
+}
+function showFavorites(){
+    favoritesOnly=true;
+    render();
+}
+function toggleFavorite(name){
+    if(favorites.includes(name)){
+        favorites=favorites.filter(x=>x!==name);
+    }else{
+        favorites.push(name);
+    }
+    saveFavorites();
+    render();
+}
+function randomProfile(){
+    const names=Object.keys(profiles);
+    if(!names.length)return;
+    const name=names[Math.floor(Math.random()*names.length)];
+    openProfile(name);
+}
+/* =========================
+   ПРОФИЛЬ
+========================= */
+function openProfile(name){
+    if(!profiles[name])return;
+    currentProfileName=name;
+    const p=normalizeProfile(profiles[name],name);
+    profiles[name]=p;
+    saveProfiles();
+    document.getElementById("profileContent").innerHTML=`
+        <div class="profile-head">
+            ${
+                p.photo
+                ? `<img class="profile-photo" src="${p.photo}" alt="">`
+                : `<div class="profile-photo" style="display:flex;align-items:center;justify-content:center;font-size:70px">👤</div>`
+            }
+            <div class="profile-info">
+                <div class="profile-original">
+                    ${escapeHTML(p.name)}
+                </div>
+                ${
+                    p.ruName
+                    ? `<div class="profile-russian">${escapeHTML(p.ruName)}</div>`
+                    :""
+                }
+                <p style="color:#aaa">
+                    ${escapeHTML(p.country || "—")}
+                </p>
+                <p>
+                    ${escapeHTML(p.description || "Нет описания.")}
+                </p>
+                <div class="tags">
+                    ${(p.tags||[]).map(t=>`
+                        <span class="tag">${escapeHTML(t)}</span>
+                    `).join("")}
+                </div>
+            </div>
+        </div>
+        <div class="section">
+            <h3>Информация</h3>
+            <p>Дата / год: ${escapeHTML(p.debut || "—")}</p>
+        </div>
+        <div class="section">
+            <h3>Сайты</h3>
+            <div class="link-list">
+                ${
+                    p.websites.length
+                    ? p.websites.map(url=>`
+                        <a href="${safeURL(url)}" target="_blank" rel="noopener">
+                            ${escapeHTML(url)}
+                        </a>
+                    `).join("")
+                    : '<span style="color:#777">Сайтов нет</span>'
+                }
+            </div>
+        </div>
+        <div class="section">
+            <h3>Видео</h3>
+            <div class="link-list">
+                ${
+                    p.videos.length
+                    ? p.videos.map(url=>`
+                        <a href="${safeURL(url)}" target="_blank" rel="noopener">
+                            ${escapeHTML(url)}
+                        </a>
+                    `).join("")
+                    : '<span style="color:#777">Видео нет</span>'
+                }
+            </div>
+        </div>
+    `;
+    document.getElementById("profileModal").classList.add("show");
+}
+function editCurrentProfile(){
+    if(currentProfileName){
+        closeModal("profileModal");
+        openProfileEditor(currentProfileName);
+    }
+}
+function openProfileEditor(name=null){
+    editingProfileName=name;
+    document.getElementById("profileEditorTitle").textContent =
+        name ? "✏️ Редактирование анкеты" : "➕ Новая анкета";
+    let p=name
+        ? normalizeProfile(profiles[name],name)
+        : defaultProfile("");
+    document.getElementById("pName").value=p.name;
+    document.getElementById("pRuName").value=p.ruName;
+    document.getElementById("pCountry").value=p.country;
+    document.getElementById("pDebut").value=p.debut;
+    document.getElementById("pDescription").value=p.description;
+    document.getElementById("pTags").value=(p.tags||[]).join(", ");
+    document.getElementById("pWebsites").value=(p.websites||[]).join("\n");
+    document.getElementById("pVideos").value=(p.videos||[]).join("\n");
+    document.getElementById("pPhoto").value="";
+    const nameInput=document.getElementById("pName");
+    /*
+       Базовые карточки можно полностью редактировать,
+       но переименование отключено, чтобы не создавать
+       случайные дубликаты.
+    */
+    nameInput.readOnly=!!(name && baseNames.includes(name));
+    nameInput.style.opacity=nameInput.readOnly?".55":"1";
+    document.getElementById("profileEditorModal").classList.add("show");
+}
+function saveProfile(){
+    const oldName=editingProfileName;
+    let name=document.getElementById("pName").value.trim();
+    const ruName=document.getElementById("pRuName").value.trim();
+    const country=document.getElementById("pCountry").value.trim();
+    const debut=document.getElementById("pDebut").value.trim();
+    const description=document.getElementById("pDescription").value.trim();
+    if(!name){
+        alert("Укажи название анкеты.");
+        return;
+    }
+    if(oldName && baseNames.includes(oldName)){
+        name=oldName;
+    }
+    if(oldName && oldName!==name && profiles[name]){
+        alert("Анкета с таким названием уже существует.");
+        return;
+    }
+    const old=oldName
+        ? normalizeProfile(profiles[oldName],oldName)
+        : defaultProfile(name);
+    const file=document.getElementById("pPhoto").files[0];
+    const finish=(photo)=>{
+        const p={
+            ...old,
+            name:name,
+            ruName:ruName,
+            country:country,
+            debut:debut,
+            description:description,
+            tags:document.getElementById("pTags").value
+                .split(",")
+                .map(x=>x.trim())
+                .filter(Boolean),
+            websites:document.getElementById("pWebsites").value
+                .split("\n")
+                .map(x=>x.trim())
+                .filter(Boolean),
+            videos:document.getElementById("pVideos").value
+                .split("\n")
+                .map(x=>x.trim())
+                .filter(Boolean),
+            custom:!baseNames.includes(name) || old.custom
+        };
+        if(photo!==null){
+            p.photo=photo;
+        }
+        if(oldName && oldName!==name){
+            delete profiles[oldName];
+            favorites=favorites.map(x=>x===oldName?name:x);
+            saveFavorites();
+        }
+        profiles[name]=p;
+        saveProfiles();
+        editingProfileName=null;
+        closeModal("profileEditorModal");
+        render();
+        if(currentProfileName===oldName){
+            currentProfileName=name;
+        }
+    };
+    if(file){
+        const reader=new FileReader();
+        reader.onload=e=>{
+            finish(e.target.result);
+        };
+        reader.readAsDataURL(file);
+    }else{
+        finish(old.photo || "");
+    }
+}
+/* =========================
+   СЛОВАРЬ
+========================= */
+const defaultDictionary=[
+    {
+        q:"привет",
+        a:"Привет! Рад тебя видеть 😊",
+        variants:[
+            "Привет! Как настроение?",
+            "Привет 😊 Как проходит день?"
+        ]
+    },
+    {
+        q:"как дела",
+        a:"Всё хорошо 😊 А у тебя как?",
+        variants:[
+            "Нормально, спасибо! А у тебя?",
+            "Всё спокойно. Рассказывай, как ты."
+        ]
+    },
+    {
+        q:"что делаешь",
+        a:"Общаюсь с тобой и отдыхаю.",
+        variants:[
+            "Сейчас просто отдыхаю.",
+            "Сижу, общаюсь и думаю, чем заняться."
+        ]
+    },
+    {
+        q:"как настроение",
+        a:"Настроение хорошее 😊",
+        variants:[
+            "Сегодня довольно спокойное настроение.",
+            "В целом хорошо. А у тебя?"
+        ]
+    },
+    {
+        q:"спасибо",
+        a:"Пожалуйста 😊",
+        variants:[
+            "Не за что!",
+            "Всегда пожалуйста."
+        ]
+    },
+    {
+        q:"пока",
+        a:"Пока! Ещё увидимся 👋",
+        variants:[
+            "До встречи!",
+            "Хорошего тебе дня!"
+        ]
+    },
+    {
+        q:"скучно",
+        a:"Давай что-нибудь придумаем. Можно поговорить, поиграть или обсудить фильм.",
+        variants:[
+            "Тогда надо срочно найти занятие 😄",
+            "Можем просто поболтать."
+        ]
+    },
+    {
+        q:"игра",
+        a:"Во что сейчас играешь?",
+        variants:[
+            "Какая игра тебе сейчас больше всего нравится?",
+            "Могу обсудить GTA, Minecraft и другие игры."
+        ]
+    },
+    {
+        q:"майнкрафт",
+        a:"Minecraft всегда подходит для спокойного вечера 😄",
+        variants:[
+            "А что сейчас строишь?",
+            "Выживание или строительство?"
+        ]
+    },
+    {
+        q:"gta",
+        a:"GTA — хороший вариант, если хочется покататься или заняться чем-нибудь в городе.",
+        variants:[
+            "Ты больше любишь RP или обычный GTA?",
+            "А чем сейчас занимаешься в GTA?"
+        ]
+    },
+    {
+        q:"музыка",
+        a:"Какую музыку обычно слушаешь?",
+        variants:[
+            "Есть сейчас песня, которую часто включаешь?",
+            "Музыка очень хорошо меняет настроение."
+        ]
+    },
+    {
+        q:"фильм",
+        a:"Что-нибудь интересное недавно смотрел?",
+        variants:[
+            "Какой фильм можешь посоветовать?",
+            "Я бы сейчас выбрал что-нибудь атмосферное."
+        ]
+    },
+    {
+        q:"работа",
+        a:"Как прошёл рабочий день?",
+        variants:[
+            "Работа сильно утомила сегодня?",
+            "После работы иногда лучше просто отдохнуть."
+        ]
+    },
+    {
+        q:"еда",
+        a:"Что сегодня ел?",
+        variants:[
+            "Есть любимое блюдо?",
+            "Иногда хорошая еда — уже отличный план на день."
+        ]
+    },
+    {
+        q:"сон",
+        a:"Нормально выспался?",
+        variants:[
+            "Сон сильно влияет на настроение.",
+            "Может, пора немного отдохнуть?"
+        ]
+    },
+    {
+        q:"любовь",
+        a:"Любовь — довольно большая тема. Для меня важны уважение, доверие и честность.",
+        variants:[
+            "В отношениях особенно важны доверие и взаимное уважение.",
+            "Главное — чтобы обоим было спокойно и комфортно."
+        ]
+    },
+    {
+        q:"отношения",
+        a:"В отношениях важно говорить друг с другом открыто и уважать личные границы.",
+        variants:[
+            "Мне кажется, доверие здесь очень важно.",
+            "Хорошие отношения строятся на взаимном уважении."
+        ]
+    },
+    {
+        q:"границы",
+        a:"Личные границы важны. Если человеку что-то некомфортно, это стоит уважать.",
+        variants:[
+            "Согласие и комфорт должны быть взаимными.",
+            "О своих границах лучше говорить прямо и спокойно."
+        ]
+    },
+    {
+        q:"путешествие",
+        a:"Куда-нибудь давно хотелось съездить?",
+        variants:[
+            "Какое место ты хотел бы увидеть?",
+            "Путешествия хорошо меняют обстановку."
+        ]
+    },
+    {
+        q:"погода",
+        a:"Какая у тебя сегодня погода?",
+        variants:[
+            "Уютная погода — отличный повод остаться дома.",
+            "Погода сильно влияет на желание куда-нибудь идти."
+        ]
+    },
+    {
+        q:"книга",
+        a:"Читаешь сейчас что-нибудь?",
+        variants:[
+            "Есть книга, которую можешь посоветовать?",
+            "Иногда хороший вечер с книгой лучше всего."
+        ]
+    },
+    {
+        q:"компьютер",
+        a:"Что сейчас делаешь на компьютере?",
+        variants:[
+            "Игры, работа или что-то программируешь?",
+            "Компьютер — универсальная штука 😄"
+        ]
+    },
+    {
+        q:"программирование",
+        a:"Какой проект сейчас делаешь?",
+        variants:[
+            "Люблю, когда из идеи постепенно получается работающий проект.",
+            "Главное — не бояться экспериментировать."
+        ]
+    },
+    {
+        q:"будущее",
+        a:"О будущем интересно думать, но иногда лучше сосредоточиться на ближайших шагах.",
+        variants:[
+            "Есть планы на ближайшее время?",
+            "Маленькие планы тоже могут постепенно привести к большой цели."
+        ]
+    },
+    {
+        q:"доброе утро",
+        a:"Доброе утро ☀️ Хорошего начала дня!",
+        variants:[
+            "Доброе утро! Выспался?",
+            "Утро начинается 😊 Какие планы?"
+        ]
+    },
+    {
+        q:"добрый вечер",
+        a:"Добрый вечер 🌙 Как прошёл день?",
+        variants:[
+            "Добрый вечер! Как настроение?",
+            "Хорошего спокойного вечера 😊"
+        ]
+    }
+];
+if(!dictionary.length){
+    dictionary=defaultDictionary;
+    saveDictionary();
+}
+function saveDictionary(){
+    localStorage.setItem("adultstars_dictionary",JSON.stringify(dictionary));
+}
+function renderDictionary(){
+    const box=document.getElementById("dictionaryList");
+    if(!dictionary.length){
+        box.innerHTML='<div class="empty">Словарь пуст. Добавь первую фразу.</div>';
+        return;
+    }
+    box.innerHTML=dictionary.map((item,index)=>`
+        <div class="dictionary-item">
+            <strong>Пользователь:</strong>
+            ${escapeHTML(item.q)}
+            <small>
+                <strong>Ответ:</strong>
+                ${escapeHTML(item.a)}
+            </small>
+            ${
+                item.variants && item.variants.length
+                ? `<small>
+                    <strong>Варианты:</strong>
+                    ${item.variants.map(escapeHTML).join(" • ")}
+                   </small>`
+                :""
+            }
+            <div class="dictionary-actions">
+                <button class="orange-btn" onclick="openDictionaryEditor(${index})">
+                    ✏️ Изменить
+                </button>
+                <button class="dark-btn" onclick="deleteDictionaryItem(${index})">
+                    🗑️ Удалить
+                </button>
+            </div>
+        </div>
+    `).join("");
+}
+function openDictionaryEditor(index=null){
+    editingDictionaryIndex=index;
+    document.getElementById("dictionaryEditorTitle").textContent =
+        index===null ? "➕ Новая фраза" : "✏️ Редактирование фразы";
+    const item=index===null
+        ? {q:"",a:"",variants:[]}
+        : dictionary[index];
+    document.getElementById("dictQuestion").value=item.q || "";
+    document.getElementById("dictAnswer").value=item.a || "";
+    document.getElementById("dictVariants").value=
+        (item.variants||[]).join("\n");
+    document.getElementById("dictionaryEditorModal").classList.add("show");
+}
+function saveDictionaryItem(){
+    const q=document.getElementById("dictQuestion").value.trim();
+    const a=document.getElementById("dictAnswer").value.trim();
+    if(!q || !a){
+        alert("Заполни фразу пользователя и ответ.");
+        return;
+    }
+    const item={
+        q:q.toLowerCase(),
+        a:a,
+        variants:document.getElementById("dictVariants").value
+            .split("\n")
+            .map(x=>x.trim())
+            .filter(Boolean)
+    };
+    if(editingDictionaryIndex===null){
+        dictionary.push(item);
+    }else{
+        dictionary[editingDictionaryIndex]=item;
+    }
+    saveDictionary();
+    renderDictionary();
+    closeModal("dictionaryEditorModal");
+    editingDictionaryIndex=null;
+}
+function deleteDictionaryItem(index){
+    if(!confirm("Удалить эту фразу из словаря?"))return;
+    dictionary.splice(index,1);
+    saveDictionary();
+    renderDictionary();
+}
+function resetDictionary(){
+    if(!confirm("Восстановить встроенный словарь? Твои добавленные фразы будут заменены.")){
+        return;
+    }
+    dictionary=JSON.parse(JSON.stringify(defaultDictionary));
+    saveDictionary();
+    renderDictionary();
+}
+/* =========================
+   ЧАТ
+========================= */
+function sendMessage(){
+    const input=document.getElementById("chatInput");
+    const text=input.value.trim();
+    if(!text)return;
+    addChatMessage("user",text);
+    input.value="";
+    setTimeout(()=>{
+        const reply=generateChatReply(text);
+        addChatMessage("bot",reply);
+        saveChat();
+    },250);
+}
+function generateChatReply(text){
+    const lower=text.toLowerCase();
+    /*
+       Сначала проверяем пользовательский словарь.
+       Чем длиннее совпавшая фраза, тем выше приоритет.
+    */
+    const sorted=[...dictionary]
+        .sort((a,b)=>(b.q||"").length-(a.q||"").length);
+    for(const item of sorted){
+        if(lower.includes(item.q.toLowerCase())){
+            const answers=[
+                item.a,
+                ...(item.variants||[])
+            ].filter(Boolean);
+            if(answers.length){
+                return answers[Math.floor(Math.random()*answers.length)];
+            }
+        }
+    }
+    /*
+       Если подходящей фразы нет —
+       используем общий нейтральный ответ.
+    */
+    const generic=[
+        "Интересно 😊 Расскажи подробнее.",
+        "Понял тебя. А что ты сам об этом думаешь?",
+        "Хорошо 😊 Продолжай.",
+        "Звучит интересно.",
+        "Можешь рассказать об этом чуть подробнее?",
+        "А какие у тебя планы на сегодня?",
+        "Понимаю тебя.",
+        "Интересная тема. Давай обсудим.",
+        "Хорошо, я тебя слушаю.",
+        "И что было дальше?",
+        "А тебе самому это нравится?",
+        "Расскажи немного больше.",
+        "Хм, интересно 🤔",
+        "Понял. А как ты к этому относишься?",
+        "Можно поговорить об этом спокойно.",
+        "Хороший вопрос.",
+        "Давай разберёмся вместе."
+    ];
+    return generic[Math.floor(Math.random()*generic.length)];
+}
+function addChatMessage(type,text){
+    const win=document.getElementById("chatWindow");
+    const div=document.createElement("div");
+    div.className="message "+type;
+    div.textContent=text;
+    win.appendChild(div);
+    win.scrollTop=win.scrollHeight;
+}
+function saveChat(){
+    const messages=[
+        ...document.querySelectorAll("#chatWindow .message")
+    ].map(x=>({
+        type:x.classList.contains("user")?"user":"bot",
+        text:x.textContent
+    }));
+    localStorage.setItem("adultstars_chat",JSON.stringify(messages));
+}
+function loadChat(){
+    const win=document.getElementById("chatWindow");
+    if(win.dataset.loaded==="1")return;
+    win.dataset.loaded="1";
+    const messages=JSON.parse(
+        localStorage.getItem("adultstars_chat") || "[]"
+    );
+    if(!messages.length){
+        addChatMessage(
+            "bot",
+            "Привет! 💬 Я чат AdultStars. Можешь добавить свои фразы в разделе «📖 Словарь»."
+        );
+        return;
+    }
+    messages.forEach(m=>addChatMessage(m.type,m.text));
+}
+/* =========================
+   УТИЛИТЫ
+========================= */
+function closeModal(id){
+    document.getElementById(id).classList.remove("show");
+}
+function escapeHTML(value){
+    return String(value ?? "")
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
+}
+function escapeAttr(value){
+    return String(value ?? "")
+        .replaceAll("\\","\\\\")
+        .replaceAll("'","\\'");
+}
+function safeURL(url){
+    const value=String(url||"").trim();
+    if(/^https?:\/\//i.test(value)){
+        return value.replaceAll('"',"");
+    }
+    return "#";
+}
+/* =========================
+   ЗАПУСК
+========================= */
+render();
+</script>
 </body>
 </html>
