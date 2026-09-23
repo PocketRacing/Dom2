@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+  <title>AdultStars — Каталог</title>
+
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+  <!-- ШАПКА -->
+  <header class="header">
+    <div class="logo">
+      Adult<span>Stars</span>
+    </div>
+
+    <button class="random-btn"
+            onclick="randomActress()">
+      🎲
+    </button>
+  </header>
+
+
+  <!-- ПОИСК -->
+  <section class="search-section">
+    <input
+      type="search"
+      id="searchInput"
+      placeholder="Поиск актрисы..."
+      oninput="searchActresses()"
+    >
+  </section>
+
+
+  <!-- ОСНОВНОЙ КОНТЕНТ -->
+  <main id="app">
+
+    <!-- КАТАЛОГ -->
+    <section id="catalogPage" class="page active">
+      <h1>Каталог</h1>
+
+      <div id="actressesGrid"
+           class="actresses-grid">
+      </div>
+    </section>
+
+
+    <!-- ИЗБРАННОЕ -->
+    <section id="favoritesPage"
+             class="page hidden">
+      <h1>Избранное</h1>
+
+      <div id="favoritesGrid"
+           class="actresses-grid">
+      </div>
+    </section>
+
+
+    <!-- ПРОФИЛЬ -->
+    <section id="profilePage"
+             class="page hidden">
+
+      <button onclick="showPage('catalog')">
+        ← Назад
+      </button>
+
+      <div id="profileContent"></div>
+    </section>
+
+
+    <!-- ЧАТ -->
+    <section id="chatPage"
+             class="page hidden">
+
+      <button onclick="showPage('catalog')">
+        ← Назад
+      </button>
+
+      <div id="chatContent"></div>
+    </section>
+
+
+    <!-- ЧЕЛЛЕНДЖИ -->
+    <section id="challengesPage"
+             class="page hidden">
+
+      <h1>Челленджи</h1>
+
+      <div id="challengesContent"></div>
+    </section>
+
+
+    <!-- НАСТРОЙКИ -->
+    <section id="preferencesPage"
+             class="page hidden">
+
+      <h1>Предпочтения</h1>
+
+      <div id="preferencesContent"></div>
+    </section>
+
+  </main>
+
+
+  <!-- НИЖНЯЯ НАВИГАЦИЯ -->
+  <nav class="bottom-nav">
+
+    <button onclick="showPage('catalog')">
+      🏠
+      <span>Главная</span>
+    </button>
+
+    <button onclick="showPage('favorites')">
+      ⭐
+      <span>Избранное</span>
+    </button>
+
+    <button onclick="randomActress()">
+      🎲
+      <span>Рандом</span>
+    </button>
+
+    <button onclick="showPage('challenges')">
+      🏆
+      <span>Задания</span>
+    </button>
+
+    <button onclick="showPage('preferences')">
+      ⚙️
+      <span>Настройки</span>
+    </button>
+
+  </nav>
+
+
+  <!-- ФАЙЛЫ ПРОЕКТА -->
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+
+</body>
+</html>
