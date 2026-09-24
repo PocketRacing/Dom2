@@ -255,11 +255,38 @@ header{
     margin-top:9px;
 }
 
+.photo-url-box{
+    background:#101010;
+    border:1px solid #292929;
+    border-radius:12px;
+    padding:11px;
+    margin-top:10px;
+}
+.photo-url-row{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+}
+.photo-url-row input{
+    flex:1;
+    min-width:200px;
+    background:#0d0d0d;
+    color:#fff;
+    border:1px solid #333;
+    border-radius:10px;
+    padding:10px;
+    outline:none;
+}
+
 .photo-preview-list{
     display:flex;
     gap:8px;
     overflow-x:auto;
-    padding:4px 0;
+    padding:8px 0;
+}
+.photo-preview-wrap{
+    position:relative;
+    flex:none;
 }
 .photo-preview{
     width:80px;
@@ -267,7 +294,20 @@ header{
     object-fit:cover;
     border-radius:9px;
     border:1px solid #333;
-    flex:none;
+    display:block;
+}
+.photo-remove{
+    position:absolute;
+    top:4px;
+    right:4px;
+    width:23px;
+    height:23px;
+    padding:0;
+    border:0;
+    border-radius:50%;
+    background:rgba(0,0,0,.8);
+    color:#fff;
+    font-size:14px;
 }
 
 .tabs{
@@ -634,7 +674,7 @@ header{
                 <label>Имя / оригинальное название</label>
 
                 <input id="pName"
-                       oninput="syncQuickSearch()">
+                       oninput="syncQuickSearch">
             </div>
 
             <div class="field">
@@ -693,6 +733,37 @@ header{
                        accept="image/*"
                        multiple
                        onchange="previewSelectedPhotos()">
+
+                <!-- НОВОЕ: ДОБАВЛЕНИЕ ФОТО ПО ССЫЛКЕ -->
+
+                <div class="photo-url-box">
+
+                    <div style="color:#aaa;font-size:13px;margin-bottom:8px">
+                        🔗 Добавить фото по ссылке
+                    </div>
+
+                    <div class="photo-url-row">
+
+                        <input
+                            id="photoUrlInput"
+                            type="url"
+                            placeholder="https://site.com/photo.jpg"
+                            onkeydown="if(event.key==='Enter')addPhotoByURL()">
+
+                        <button
+                            class="orange-btn"
+                            type="button"
+                            onclick="addPhotoByURL()">
+                            ➕ Добавить
+                        </button>
+
+                    </div>
+
+                    <div style="color:#666;font-size:11px;margin-top:7px">
+                        Вставь прямую ссылку на изображение, например JPG, JPEG, PNG или WEBP.
+                    </div>
+
+                </div>
 
                 <div id="photoPreviewList"
                      class="photo-preview-list">
@@ -927,8 +998,13 @@ let dictionary =
 let currentProfileName = null;
 let editingProfileName = null;
 let editingDictionaryIndex = null;
+
 let favoritesOnly = false;
 let blacklistOnly = false;
+
+/* НОВОЕ:
+   временный список фотографий редактора */
+let editorPhotos = [];
 
 
 /* =========================
@@ -1170,15 +1246,11 @@ function render(){
 
                 ${
                     firstPhoto
-
                     ?
-
                     `<img class="card-photo"
                           src="${firstPhoto}"
                           alt="">`
-
                     :
-
                     `<div class="card-photo"
                           style="display:flex;align-items:center;justify-content:center;font-size:55px">
                         👤
@@ -1702,17 +1774,20 @@ function openProfileEditor(name=null){
 
     let p=
         name
-
         ?
-
         normalizeProfile(
             profiles[name],
             name
         )
-
         :
-
         defaultProfile("");
+
+    /*
+       НОВОЕ:
+       создаём временную копию фотографий.
+       Теперь сюда попадут и файлы, и ссылки.
+    */
+    editorPhotos=[...(p.photos||[])];
 
     document.getElementById("pName").value=
         p.name;
@@ -1740,10 +1815,12 @@ function openProfileEditor(name=null){
 
     document.getElementById("pPhoto").value="";
 
+    document.getElementById("photoUrlInput").value="";
+
     document.getElementById("quickSearchName").value=
         p.name;
 
-    renderExistingPhotos(p.photos||[]);
+    renderEditorPhotos();
 
     const nameInput=
         document.getElementById("pName");
@@ -1763,17 +1840,25 @@ function openProfileEditor(name=null){
 
 
 /* =========================
-   ПРЕДПРОСМОТР ФОТО
+   ФОТО РЕДАКТОРА
 ========================= */
 
-function renderExistingPhotos(photos){
+/*
+   Общий рендер фотографий.
+   Здесь отображаются:
+   - старые фото;
+   - фото по ссылке;
+   - новые фото с устройства.
+*/
+
+function renderEditorPhotos(){
 
     const box=
         document.getElementById(
             "photoPreviewList"
         );
 
-    if(!photos.length){
+    if(!editorPhotos.length){
 
         box.innerHTML=
             '<span style="color:#666;font-size:12px">Фотографий пока нет</span>';
@@ -1782,16 +1867,48 @@ function renderExistingPhotos(photos){
     }
 
     box.innerHTML=
-        photos.map((photo,index)=>`
+        editorPhotos.map((photo,index)=>`
 
-            <img
-                class="photo-preview"
-                src="${photo}"
-                title="Фото ${index+1}"
-            >
+            <div class="photo-preview-wrap">
+
+                <img
+                    class="photo-preview"
+                    src="${escapeHTML(photo)}"
+                    onerror="this.style.opacity='.35'"
+                >
+
+                <button
+                    type="button"
+                    class="photo-remove"
+                    onclick="removeEditorPhoto(${index})">
+                    ×
+                </button>
+
+            </div>
 
         `).join("");
 }
+
+
+/*
+   Удаление фотографии из временного списка.
+*/
+
+function removeEditorPhoto(index){
+
+    if(index<0 || index>=editorPhotos.length){
+        return;
+    }
+
+    editorPhotos.splice(index,1);
+
+    renderEditorPhotos();
+}
+
+
+/*
+   Выбор фотографий с устройства.
+*/
 
 function previewSelectedPhotos(){
 
@@ -1801,38 +1918,108 @@ function previewSelectedPhotos(){
     const files=
         Array.from(input.files || []);
 
-    const box=
-        document.getElementById(
-            "photoPreviewList"
-        );
-
     if(!files.length)return;
 
-    box.innerHTML="";
-
     files.forEach(file=>{
+
+        if(!file.type.startsWith("image/")){
+            return;
+        }
 
         const reader=
             new FileReader();
 
         reader.onload=e=>{
 
-            const img=
-                document.createElement("img");
+            editorPhotos.push(
+                e.target.result
+            );
 
-            img.className=
-                "photo-preview";
-
-            img.src=
-                e.target.result;
-
-            box.appendChild(img);
+            renderEditorPhotos();
 
         };
 
         reader.readAsDataURL(file);
 
     });
+
+    /*
+       Очищаем input, чтобы можно было
+       снова выбрать тот же файл.
+    */
+    input.value="";
+}
+
+
+/* =========================
+   НОВОЕ:
+   ДОБАВЛЕНИЕ ФОТО ПО ССЫЛКЕ
+========================= */
+
+function addPhotoByURL(){
+
+    const input=
+        document.getElementById(
+            "photoUrlInput"
+        );
+
+    const url=
+        input.value.trim();
+
+    if(!url){
+
+        alert(
+            "Вставь ссылку на изображение."
+        );
+
+        return;
+    }
+
+    /*
+       Разрешаем только обычные
+       HTTP/HTTPS ссылки.
+    */
+
+    if(!/^https?:\/\//i.test(url)){
+
+        alert(
+            "Ссылка должна начинаться с http:// или https://"
+        );
+
+        return;
+    }
+
+    /*
+       Проверяем, что браузер действительно
+       может загрузить изображение.
+    */
+
+    const testImage=
+        new Image();
+
+    testImage.onload=function(){
+
+        if(!editorPhotos.includes(url)){
+
+            editorPhotos.push(url);
+
+            renderEditorPhotos();
+
+        }
+
+        input.value="";
+
+    };
+
+    testImage.onerror=function(){
+
+        alert(
+            "Не удалось загрузить изображение по этой ссылке.\n\nПопробуй прямую ссылку на файл изображения."
+        );
+
+    };
+
+    testImage.src=url;
 }
 
 
@@ -1996,157 +2183,103 @@ function saveProfile(){
 
         defaultProfile(name);
 
-    const fileInput=
-        document.getElementById(
-            "pPhoto"
-        );
+    const p={
 
-    const files=
-        Array.from(
-            fileInput.files || []
-        );
+        ...old,
 
-    const finish=(newPhotos)=>{
+        name:name,
 
-        const p={
+        ruName:ruName,
 
-            ...old,
+        country:country,
 
-            name:name,
+        debut:debut,
 
-            ruName:ruName,
+        description:description,
 
-            country:country,
+        tags:
+            document.getElementById(
+                "pTags"
+            ).value
+            .split(",")
+            .map(x=>x.trim())
+            .filter(Boolean),
 
-            debut:debut,
+        websites:
+            document.getElementById(
+                "pWebsites"
+            ).value
+            .split("\n")
+            .map(x=>x.trim())
+            .filter(Boolean),
 
-            description:description,
+        videos:
+            document.getElementById(
+                "pVideos"
+            ).value
+            .split("\n")
+            .map(x=>x.trim())
+            .filter(Boolean),
 
-            tags:
-                document.getElementById(
-                    "pTags"
-                ).value
-                .split(",")
-                .map(x=>x.trim())
-                .filter(Boolean),
+        /*
+           Теперь сохраняются все фото:
+           - старые;
+           - загруженные с устройства;
+           - добавленные по URL.
+        */
+        photos:[...editorPhotos],
 
-            websites:
-                document.getElementById(
-                    "pWebsites"
-                ).value
-                .split("\n")
-                .map(x=>x.trim())
-                .filter(Boolean),
+        photo:
+            editorPhotos[0] || "",
 
-            videos:
-                document.getElementById(
-                    "pVideos"
-                ).value
-                .split("\n")
-                .map(x=>x.trim())
-                .filter(Boolean),
-
-            custom:
-                !baseNames.includes(name)
-                || old.custom
-
-        };
-
-        if(newPhotos.length){
-
-            p.photos=[
-                ...(old.photos||[]),
-                ...newPhotos
-            ];
-
-        }else{
-
-            p.photos=
-                old.photos||[];
-
-        }
-
-        p.photo=
-            p.photos[0]||"";
-
-        if(oldName &&
-           oldName!==name){
-
-            delete profiles[oldName];
-
-            favorites=
-                favorites.map(
-                    x=>x===oldName
-                    ? name
-                    : x
-                );
-
-            blacklist=
-                blacklist.map(
-                    x=>x===oldName
-                    ? name
-                    : x
-                );
-
-            saveFavorites();
-            saveBlacklist();
-        }
-
-        profiles[name]=p;
-
-        saveProfiles();
-
-        editingProfileName=null;
-
-        closeModal(
-            "profileEditorModal"
-        );
-
-        render();
-
-        if(currentProfileName===oldName){
-
-            currentProfileName=name;
-
-        }
+        custom:
+            !baseNames.includes(name)
+            || old.custom
 
     };
 
-    if(!files.length){
+    if(oldName &&
+       oldName!==name){
 
-        finish([]);
+        delete profiles[oldName];
 
-        return;
-    }
-
-    const newPhotos=[];
-
-    let loaded=0;
-
-    files.forEach(file=>{
-
-        const reader=
-            new FileReader();
-
-        reader.onload=e=>{
-
-            newPhotos.push(
-                e.target.result
+        favorites=
+            favorites.map(
+                x=>x===oldName
+                ? name
+                : x
             );
 
-            loaded++;
+        blacklist=
+            blacklist.map(
+                x=>x===oldName
+                ? name
+                : x
+            );
 
-            if(loaded===files.length){
+        saveFavorites();
+        saveBlacklist();
+    }
 
-                finish(newPhotos);
+    profiles[name]=p;
 
-            }
+    saveProfiles();
 
-        };
+    editingProfileName=null;
 
-        reader.readAsDataURL(file);
+    editorPhotos=[];
 
-    });
+    closeModal(
+        "profileEditorModal"
+    );
+
+    render();
+
+    if(currentProfileName===oldName){
+
+        currentProfileName=name;
+
+    }
 }
 
 
@@ -2637,6 +2770,14 @@ function closeModal(id){
         id
     ).classList.remove("show");
 
+    /*
+       При закрытии редактора без сохранения
+       временные изменения не затрагивают профиль.
+    */
+
+    if(id==="profileEditorModal"){
+        editorPhotos=[];
+    }
 }
 
 function escapeHTML(value){
