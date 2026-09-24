@@ -61,6 +61,20 @@ header{
     border-radius:10px;
     padding:9px 12px;
 }
+.red-btn{
+    border:1px solid #612020;
+    background:#281313;
+    color:#ff8d8d;
+    border-radius:10px;
+    padding:9px 12px;
+}
+.green-btn{
+    border:1px solid #285b35;
+    background:#132519;
+    color:#8be39b;
+    border-radius:10px;
+    padding:9px 12px;
+}
 
 .container{
     max-width:1100px;
@@ -92,12 +106,24 @@ header{
     transform:translateY(-2px);
     border-color:#ff7a00;
 }
+.card-photo-wrap{
+    position:relative;
+}
 .card-photo{
     width:100%;
     height:250px;
     object-fit:cover;
     background:#222;
     display:block;
+}
+.photo-counter{
+    position:absolute;
+    right:8px;
+    bottom:8px;
+    background:rgba(0,0,0,.75);
+    border-radius:8px;
+    padding:5px 8px;
+    font-size:12px;
 }
 .card-body{padding:13px}
 .card-name{
@@ -114,13 +140,21 @@ header{
     font-size:12px;
     margin-top:8px;
 }
+.card-status{
+    display:inline-block;
+    margin-top:7px;
+    font-size:11px;
+    color:#ff8d8d;
+}
 .card-buttons{
     display:flex;
     gap:7px;
     margin-top:12px;
+    flex-wrap:wrap;
 }
 .card-buttons button{
     flex:1;
+    min-width:70px;
 }
 
 .empty{
@@ -141,7 +175,7 @@ header{
 .modal-bg.show{display:block}
 
 .modal{
-    max-width:720px;
+    max-width:760px;
     margin:30px auto;
     background:#141414;
     border:1px solid #333;
@@ -188,6 +222,54 @@ header{
     flex-wrap:wrap;
 }
 
+.quick-search{
+    background:#101010;
+    border:1px solid #292929;
+    border-radius:14px;
+    padding:12px;
+    margin-bottom:14px;
+}
+.quick-search-title{
+    font-size:13px;
+    color:#aaa;
+    margin-bottom:8px;
+}
+.quick-search-row{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+}
+.quick-search-row input{
+    flex:1;
+    min-width:180px;
+    background:#0d0d0d;
+    color:#fff;
+    border:1px solid #333;
+    border-radius:10px;
+    padding:10px;
+}
+.search-links{
+    display:flex;
+    gap:7px;
+    flex-wrap:wrap;
+    margin-top:9px;
+}
+
+.photo-preview-list{
+    display:flex;
+    gap:8px;
+    overflow-x:auto;
+    padding:4px 0;
+}
+.photo-preview{
+    width:80px;
+    height:90px;
+    object-fit:cover;
+    border-radius:9px;
+    border:1px solid #333;
+    flex:none;
+}
+
 .tabs{
     display:flex;
     gap:7px;
@@ -219,6 +301,23 @@ header{
     object-fit:cover;
     border-radius:15px;
     background:#222;
+}
+.profile-gallery{
+    display:flex;
+    gap:7px;
+    overflow-x:auto;
+    margin-top:10px;
+}
+.profile-thumb{
+    width:65px;
+    height:75px;
+    object-fit:cover;
+    border-radius:8px;
+    border:2px solid #333;
+    cursor:pointer;
+}
+.profile-thumb.active{
+    border-color:#ff7a00;
 }
 .profile-info{flex:1}
 .profile-original{
@@ -367,7 +466,12 @@ header{
 <header>
     <div class="header-row">
         <div class="logo">AdultStars</div>
-        <input id="search" class="search" placeholder="Поиск анкеты..." oninput="render()">
+
+        <input id="search"
+               class="search"
+               placeholder="Поиск анкеты..."
+               oninput="render()">
+
         <button class="icon-btn" onclick="randomProfile()">🎲</button>
     </div>
 </header>
@@ -386,6 +490,7 @@ header{
             <button class="orange-btn" onclick="openProfileEditor()">➕ Новая анкета</button>
             <button class="dark-btn" onclick="showFavorites()">⭐ Избранное</button>
             <button class="dark-btn" onclick="showAll()">Все анкеты</button>
+            <button class="red-btn" onclick="showBlacklist()">🚫 ЧС <span id="blacklistCount"></span></button>
         </div>
 
         <div id="profilesGrid" class="grid"></div>
@@ -405,7 +510,10 @@ header{
             <div id="chatWindow" class="chat-window"></div>
 
             <div class="chat-input">
-                <input id="chatInput" placeholder="Напиши сообщение..." onkeydown="if(event.key==='Enter')sendMessage()">
+                <input id="chatInput"
+                       placeholder="Напиши сообщение..."
+                       onkeydown="if(event.key==='Enter')sendMessage()">
+
                 <button class="orange-btn" onclick="sendMessage()">Отправить</button>
             </div>
         </div>
@@ -421,9 +529,11 @@ header{
 
         <div class="section">
             <h2 style="margin-top:0">📖 Мой словарь</h2>
+
             <p style="color:#888">
                 Добавляй свои слова, фразы и ответы. Они сохраняются в браузере.
             </p>
+
             <div id="dictionaryList" class="dictionary-list"></div>
         </div>
 
@@ -439,104 +549,230 @@ header{
 
 
 <!-- PROFILE VIEW -->
+
 <div id="profileModal" class="modal-bg">
     <div class="modal">
+
         <div id="profileContent"></div>
+
         <div class="modal-actions">
-            <button class="dark-btn" onclick="closeModal('profileModal')">Закрыть</button>
-            <button class="orange-btn" onclick="editCurrentProfile()">✏️ Редактировать</button>
+
+            <button class="dark-btn"
+                    onclick="closeModal('profileModal')">
+                Закрыть
+            </button>
+
+            <button class="red-btn"
+                    onclick="blacklistCurrentProfile()">
+                🚫 В ЧС
+            </button>
+
+            <button class="red-btn"
+                    onclick="deleteCurrentProfile()">
+                🗑️ Удалить
+            </button>
+
+            <button class="orange-btn"
+                    onclick="editCurrentProfile()">
+                ✏️ Редактировать
+            </button>
+
         </div>
     </div>
 </div>
 
 
 <!-- PROFILE EDITOR -->
+
 <div id="profileEditorModal" class="modal-bg">
     <div class="modal">
+
         <h2 id="profileEditorTitle">Новая анкета</h2>
+
+        <div class="quick-search">
+
+            <div class="quick-search-title">
+                🔎 Быстрый поиск информации по имени
+            </div>
+
+            <div class="quick-search-row">
+
+                <input id="quickSearchName"
+                       placeholder="Например: имя актрисы">
+
+                <button class="orange-btn"
+                        onclick="quickBrowserSearch()">
+                    🔎 Искать
+                </button>
+
+            </div>
+
+            <div class="search-links">
+
+                <button class="dark-btn"
+                        onclick="searchGoogle()">
+                    Google
+                </button>
+
+                <button class="dark-btn"
+                        onclick="searchBing()">
+                    Bing
+                </button>
+
+                <button class="dark-btn"
+                        onclick="searchImages()">
+                    🖼️ Картинки
+                </button>
+
+            </div>
+
+        </div>
 
         <div class="form-grid">
 
             <div class="field">
                 <label>Имя / оригинальное название</label>
-                <input id="pName">
+
+                <input id="pName"
+                       oninput="syncQuickSearch()">
             </div>
 
             <div class="field">
                 <label>Русское название</label>
+
                 <input id="pRuName">
             </div>
 
             <div class="field">
                 <label>Страна</label>
+
                 <input id="pCountry">
             </div>
 
             <div class="field">
                 <label>Дата / год</label>
+
                 <input id="pDebut">
             </div>
 
             <div class="field full">
                 <label>Описание</label>
+
                 <textarea id="pDescription"></textarea>
             </div>
 
             <div class="field full">
                 <label>Теги через запятую</label>
-                <input id="pTags" placeholder="например: актриса, модель, интервью">
+
+                <input id="pTags"
+                       placeholder="например: актриса, модель">
             </div>
 
             <div class="field full">
                 <label>Сайты — каждый с новой строки</label>
-                <textarea id="pWebsites" placeholder="https://example.com"></textarea>
+
+                <textarea id="pWebsites"
+                          placeholder="https://example.com"></textarea>
             </div>
 
             <div class="field full">
                 <label>Видео — каждое с новой строки</label>
-                <textarea id="pVideos" placeholder="https://youtube.com/..."></textarea>
+
+                <textarea id="pVideos"
+                          placeholder="https://example.com/video"></textarea>
             </div>
 
             <div class="field full">
-                <label>Фото</label>
-                <input type="file" id="pPhoto" accept="image/*">
+
+                <label>
+                    Фото — можно выбрать сразу несколько
+                </label>
+
+                <input type="file"
+                       id="pPhoto"
+                       accept="image/*"
+                       multiple
+                       onchange="previewSelectedPhotos()">
+
+                <div id="photoPreviewList"
+                     class="photo-preview-list">
+                </div>
+
             </div>
 
         </div>
 
         <div class="modal-actions">
-            <button class="dark-btn" onclick="closeModal('profileEditorModal')">Отмена</button>
-            <button class="orange-btn" onclick="saveProfile()">💾 Сохранить</button>
+
+            <button class="dark-btn"
+                    onclick="closeModal('profileEditorModal')">
+                Отмена
+            </button>
+
+            <button class="orange-btn"
+                    onclick="saveProfile()">
+                💾 Сохранить
+            </button>
+
         </div>
+
     </div>
 </div>
 
 
 <!-- DICTIONARY EDITOR -->
+
 <div id="dictionaryEditorModal" class="modal-bg">
+
     <div class="modal">
+
         <h2 id="dictionaryEditorTitle">Новая фраза</h2>
 
         <div class="field">
+
             <label>Что должен написать пользователь</label>
-            <input id="dictQuestion" placeholder="например: привет">
+
+            <input id="dictQuestion"
+                   placeholder="например: привет">
+
         </div>
 
         <div class="field">
+
             <label>Ответ чата</label>
-            <textarea id="dictAnswer" placeholder="Например: Привет! Рад тебя видеть 😊"></textarea>
+
+            <textarea id="dictAnswer"
+                      placeholder="Например: Привет! Рад тебя видеть 😊">
+            </textarea>
+
         </div>
 
         <div class="field">
+
             <label>Дополнительные варианты ответа</label>
-            <textarea id="dictVariants" placeholder="Каждый вариант с новой строки"></textarea>
+
+            <textarea id="dictVariants"
+                      placeholder="Каждый вариант с новой строки">
+            </textarea>
+
         </div>
 
         <div class="modal-actions">
-            <button class="dark-btn" onclick="closeModal('dictionaryEditorModal')">Отмена</button>
-            <button class="orange-btn" onclick="saveDictionaryItem()">💾 Сохранить</button>
+
+            <button class="dark-btn"
+                    onclick="closeModal('dictionaryEditorModal')">
+                Отмена
+            </button>
+
+            <button class="orange-btn"
+                    onclick="saveDictionaryItem()">
+                💾 Сохранить
+            </button>
+
         </div>
+
     </div>
+
 </div>
 
 
@@ -610,7 +846,7 @@ const russianNames = {
 "Nicole Aniston":"Николь Энистон",
 "Nikki Benz":"Никки Бенц",
 "Olivia Austin":"Оливия Остин",
-"Piper Perri":"Пайпер Перри",
+"Piper Perri":"Пайпер Пэрри",
 "Riley Reid":"Райли Рид",
 "Romi Rain":"Роми Рэйн",
 "Sasha Grey":"Саша Грей",
@@ -626,7 +862,7 @@ const russianNames = {
 "Wifey":"Вайфи",
 "Abby Lee Brazil":"Эбби Ли Бразил",
 "Adriana Chechik":"Адриана Чечик",
-"Alexis Texas":"Алексис Тексас",
+"Alexis Texas":"Алексис Техас",
 "Allie Haze":"Элли Хейз",
 "Amarna Miller":"Амарна Миллер",
 "Amy Anderssen":"Эми Андерссен",
@@ -676,21 +912,31 @@ const russianNames = {
    ХРАНИЛИЩЕ
 ========================= */
 
-let profiles = JSON.parse(localStorage.getItem("adultstars_profiles") || "{}");
-let favorites = JSON.parse(localStorage.getItem("adultstars_favorites") || "[]");
-let dictionary = JSON.parse(localStorage.getItem("adultstars_dictionary") || "[]");
+let profiles =
+    JSON.parse(localStorage.getItem("adultstars_profiles") || "{}");
+
+let favorites =
+    JSON.parse(localStorage.getItem("adultstars_favorites") || "[]");
+
+let blacklist =
+    JSON.parse(localStorage.getItem("adultstars_blacklist") || "[]");
+
+let dictionary =
+    JSON.parse(localStorage.getItem("adultstars_dictionary") || "[]");
 
 let currentProfileName = null;
 let editingProfileName = null;
 let editingDictionaryIndex = null;
 let favoritesOnly = false;
+let blacklistOnly = false;
 
 
 /* =========================
-   ВСТРОЕННЫЕ АНКЕТЫ
+   ПРОФИЛЬ ПО УМОЛЧАНИЮ
 ========================= */
 
 function defaultProfile(name){
+
     return {
         name:name,
         ruName:russianNames[name] || "",
@@ -700,23 +946,24 @@ function defaultProfile(name){
         tags:["профиль"],
         websites:[],
         videos:[],
+        photos:[],
         photo:"",
         custom:false
     };
 }
 
-for(const name of baseNames){
-    if(!profiles[name]){
-        profiles[name]=defaultProfile(name);
-    }else{
-        profiles[name]=normalizeProfile(profiles[name],name);
-    }
-}
 
-saveProfiles();
-
+/* =========================
+   НОРМАЛИЗАЦИЯ
+========================= */
 
 function normalizeProfile(p,name){
+
+    const oldPhotos =
+        Array.isArray(p.photos)
+        ? p.photos
+        : (p.photo ? [p.photo] : []);
+
     return {
         ...defaultProfile(name),
         ...p,
@@ -725,17 +972,56 @@ function normalizeProfile(p,name){
         tags:Array.isArray(p.tags)?p.tags:[],
         websites:Array.isArray(p.websites)?p.websites:[],
         videos:Array.isArray(p.videos)?p.videos:[],
+        photos:oldPhotos,
+        photo:oldPhotos[0] || "",
         custom:!!p.custom
     };
 }
 
+
+/* =========================
+   СОХРАНЕНИЕ
+========================= */
+
 function saveProfiles(){
-    localStorage.setItem("adultstars_profiles",JSON.stringify(profiles));
+    localStorage.setItem(
+        "adultstars_profiles",
+        JSON.stringify(profiles)
+    );
 }
 
 function saveFavorites(){
-    localStorage.setItem("adultstars_favorites",JSON.stringify(favorites));
+    localStorage.setItem(
+        "adultstars_favorites",
+        JSON.stringify(favorites)
+    );
 }
+
+function saveBlacklist(){
+    localStorage.setItem(
+        "adultstars_blacklist",
+        JSON.stringify(blacklist)
+    );
+}
+
+
+/* =========================
+   СОЗДАНИЕ БАЗОВЫХ
+========================= */
+
+for(const name of baseNames){
+
+    if(!profiles[name]){
+        profiles[name]=defaultProfile(name);
+    }else{
+        profiles[name]=normalizeProfile(
+            profiles[name],
+            name
+        );
+    }
+}
+
+saveProfiles();
 
 
 /* =========================
@@ -753,56 +1039,117 @@ function showPage(page){
     document.getElementById("dictionaryPage").style.display =
         page==="dictionary" ? "block":"none";
 
-    document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));
+    document.querySelectorAll(".tab")
+        .forEach(x=>x.classList.remove("active"));
 
     if(page==="profiles"){
-        document.getElementById("tabProfiles").classList.add("active");
+        document.getElementById("tabProfiles")
+            .classList.add("active");
     }
 
     if(page==="chat"){
-        document.getElementById("tabChat").classList.add("active");
+        document.getElementById("tabChat")
+            .classList.add("active");
+
         loadChat();
     }
 
     if(page==="dictionary"){
-        document.getElementById("tabDictionary").classList.add("active");
+        document.getElementById("tabDictionary")
+            .classList.add("active");
+
         renderDictionary();
     }
 
-    document.querySelectorAll(".bottom-nav button").forEach(x=>x.classList.remove("active"));
+    document.querySelectorAll(".bottom-nav button")
+        .forEach(x=>x.classList.remove("active"));
 
-    if(page==="profiles") document.getElementById("navProfiles").classList.add("active");
-    if(page==="chat") document.getElementById("navChat").classList.add("active");
-    if(page==="dictionary") document.getElementById("navDictionary").classList.add("active");
+    if(page==="profiles")
+        document.getElementById("navProfiles")
+            .classList.add("active");
+
+    if(page==="chat")
+        document.getElementById("navChat")
+            .classList.add("active");
+
+    if(page==="dictionary")
+        document.getElementById("navDictionary")
+            .classList.add("active");
 }
 
 
 /* =========================
-   КАРТОЧКИ
+   РЕНДЕР КАРТОЧЕК
 ========================= */
 
 function render(){
 
     const grid=document.getElementById("profilesGrid");
-    const query=document.getElementById("search").value.toLowerCase().trim();
+
+    const query=
+        document.getElementById("search")
+        .value
+        .toLowerCase()
+        .trim();
 
     let list=Object.values(profiles);
 
+    if(blacklistOnly){
+
+        list=list.filter(p=>
+            blacklist.includes(p.name)
+        );
+
+    }else{
+
+        list=list.filter(p=>
+            !blacklist.includes(p.name)
+        );
+
+    }
+
     if(favoritesOnly){
-        list=list.filter(p=>favorites.includes(p.name));
+
+        list=list.filter(p=>
+            favorites.includes(p.name)
+        );
+
     }
 
     if(query){
+
         list=list.filter(p=>
+
             p.name.toLowerCase().includes(query) ||
-            (p.ruName||"").toLowerCase().includes(query) ||
-            (p.country||"").toLowerCase().includes(query) ||
-            (p.tags||[]).join(" ").toLowerCase().includes(query)
+
+            (p.ruName||"")
+                .toLowerCase()
+                .includes(query) ||
+
+            (p.country||"")
+                .toLowerCase()
+                .includes(query) ||
+
+            (p.description||"")
+                .toLowerCase()
+                .includes(query) ||
+
+            (p.tags||[])
+                .join(" ")
+                .toLowerCase()
+                .includes(query)
+
         );
+
     }
 
     if(!list.length){
-        grid.innerHTML='<div class="empty">Ничего не найдено</div>';
+
+        grid.innerHTML=
+            '<div class="empty">Ничего не найдено</div>';
+
+        updateBlacklistCount();
+
         return;
     }
 
@@ -810,73 +1157,282 @@ function render(){
 
         const isFav=favorites.includes(p.name);
 
+        const photos=p.photos||[];
+
+        const firstPhoto=
+            photos[0] || p.photo || "";
+
         return `
+
         <article class="card">
 
-            ${
-                p.photo
-                ? `<img class="card-photo" src="${p.photo}" alt="">`
-                : `<div class="card-photo" style="display:flex;align-items:center;justify-content:center;font-size:55px">👤</div>`
-            }
+            <div class="card-photo-wrap">
+
+                ${
+                    firstPhoto
+
+                    ?
+
+                    `<img class="card-photo"
+                          src="${firstPhoto}"
+                          alt="">`
+
+                    :
+
+                    `<div class="card-photo"
+                          style="display:flex;align-items:center;justify-content:center;font-size:55px">
+                        👤
+                     </div>`
+                }
+
+                ${
+                    photos.length>1
+                    ?
+                    `<div class="photo-counter">
+                        🖼️ ${photos.length}
+                     </div>`
+                    :""
+                }
+
+            </div>
 
             <div class="card-body">
 
-                <div class="card-name">${escapeHTML(p.name)}</div>
+                <div class="card-name">
+                    ${escapeHTML(p.name)}
+                </div>
 
                 ${
                     p.ruName
-                    ? `<div class="card-ru">${escapeHTML(p.ruName)}</div>`
-                    : ""
+                    ?
+                    `<div class="card-ru">
+                        ${escapeHTML(p.ruName)}
+                     </div>`
+                    :""
                 }
 
                 <div class="card-meta">
                     ${escapeHTML(p.country || "—")}
                 </div>
 
+                ${
+                    blacklistOnly
+                    ?
+                    `<div class="card-status">
+                        🚫 Карточка находится в ЧС
+                     </div>`
+                    :""
+                }
+
                 <div class="card-buttons">
-                    <button class="orange-btn" onclick="openProfile('${escapeAttr(p.name)}')">
+
+                    <button class="orange-btn"
+                            onclick="openProfile('${escapeAttr(p.name)}')">
                         Открыть
                     </button>
 
-                    <button class="dark-btn" onclick="toggleFavorite('${escapeAttr(p.name)}')">
+                    <button class="dark-btn"
+                            onclick="toggleFavorite('${escapeAttr(p.name)}')">
                         ${isFav?"★":"☆"}
                     </button>
+
+                </div>
+
+                <div class="card-buttons">
+
+                    ${
+                        blacklistOnly
+
+                        ?
+
+                        `<button class="green-btn"
+                                 onclick="restoreFromBlacklist('${escapeAttr(p.name)}')">
+                            ♻️ Вернуть
+                         </button>`
+
+                        :
+
+                        `<button class="red-btn"
+                                 onclick="blacklistProfile('${escapeAttr(p.name)}')">
+                            🚫 ЧС
+                         </button>`
+                    }
+
+                    <button class="red-btn"
+                            onclick="deleteProfile('${escapeAttr(p.name)}')">
+                        🗑️
+                    </button>
+
                 </div>
 
             </div>
-        </article>`;
+
+        </article>
+
+        `;
+
     }).join("");
+
+    updateBlacklistCount();
+}
+
+
+/* =========================
+   ЧС
+========================= */
+
+function showBlacklist(){
+
+    favoritesOnly=false;
+    blacklistOnly=true;
+
+    render();
 }
 
 function showAll(){
+
     favoritesOnly=false;
+    blacklistOnly=false;
+
     render();
 }
 
-function showFavorites(){
-    favoritesOnly=true;
+function updateBlacklistCount(){
+
+    const el=document.getElementById("blacklistCount");
+
+    if(el){
+        el.textContent =
+            blacklist.length
+            ? `(${blacklist.length})`
+            : "";
+    }
+}
+
+function blacklistProfile(name){
+
+    if(!profiles[name])return;
+
+    if(!blacklist.includes(name)){
+        blacklist.push(name);
+    }
+
+    favorites=
+        favorites.filter(x=>x!==name);
+
+    saveBlacklist();
+    saveFavorites();
+
     render();
 }
+
+function restoreFromBlacklist(name){
+
+    blacklist=
+        blacklist.filter(x=>x!==name);
+
+    saveBlacklist();
+
+    render();
+}
+
+function blacklistCurrentProfile(){
+
+    if(!currentProfileName)return;
+
+    blacklistProfile(currentProfileName);
+
+    closeModal("profileModal");
+}
+
+function deleteProfile(name){
+
+    if(!profiles[name])return;
+
+    if(!confirm(
+        "Удалить эту карточку полностью?\n\nДанные карточки будут удалены из браузера."
+    )){
+        return;
+    }
+
+    delete profiles[name];
+
+    favorites=
+        favorites.filter(x=>x!==name);
+
+    blacklist=
+        blacklist.filter(x=>x!==name);
+
+    saveProfiles();
+    saveFavorites();
+    saveBlacklist();
+
+    if(currentProfileName===name){
+        currentProfileName=null;
+    }
+
+    render();
+}
+
+function deleteCurrentProfile(){
+
+    if(!currentProfileName)return;
+
+    const name=currentProfileName;
+
+    closeModal("profileModal");
+
+    deleteProfile(name);
+}
+
+
+/* =========================
+   ИЗБРАННОЕ
+========================= */
 
 function toggleFavorite(name){
 
     if(favorites.includes(name)){
-        favorites=favorites.filter(x=>x!==name);
+
+        favorites=
+            favorites.filter(x=>x!==name);
+
     }else{
+
         favorites.push(name);
+
     }
 
     saveFavorites();
+
     render();
 }
 
+function showFavorites(){
+
+    favoritesOnly=true;
+    blacklistOnly=false;
+
+    render();
+}
+
+
+/* =========================
+   RANDOM
+========================= */
+
 function randomProfile(){
 
-    const names=Object.keys(profiles);
+    let names=
+        Object.keys(profiles)
+        .filter(name=>!blacklist.includes(name));
 
     if(!names.length)return;
 
-    const name=names[Math.floor(Math.random()*names.length)];
+    const name=
+        names[Math.floor(
+            Math.random()*names.length
+        )];
 
     openProfile(name);
 }
@@ -892,20 +1448,69 @@ function openProfile(name){
 
     currentProfileName=name;
 
-    const p=normalizeProfile(profiles[name],name);
+    const p=
+        normalizeProfile(
+            profiles[name],
+            name
+        );
 
     profiles[name]=p;
+
     saveProfiles();
+
+    const photos=p.photos||[];
+
+    const firstPhoto=
+        photos[0] || p.photo || "";
 
     document.getElementById("profileContent").innerHTML=`
 
         <div class="profile-head">
 
-            ${
-                p.photo
-                ? `<img class="profile-photo" src="${p.photo}" alt="">`
-                : `<div class="profile-photo" style="display:flex;align-items:center;justify-content:center;font-size:70px">👤</div>`
-            }
+            <div>
+
+                ${
+                    firstPhoto
+
+                    ?
+
+                    `<img id="profileMainPhoto"
+                          class="profile-photo"
+                          src="${firstPhoto}"
+                          alt="">`
+
+                    :
+
+                    `<div id="profileMainPhoto"
+                          class="profile-photo"
+                          style="display:flex;align-items:center;justify-content:center;font-size:70px">
+                        👤
+                     </div>`
+                }
+
+                ${
+                    photos.length>1
+
+                    ?
+
+                    `<div class="profile-gallery">
+
+                        ${photos.map((photo,index)=>`
+
+                            <img
+                                class="profile-thumb ${index===0?"active":""}"
+                                src="${photo}"
+                                onclick="changeProfilePhoto(${index})"
+                            >
+
+                        `).join("")}
+
+                     </div>`
+
+                    :""
+                }
+
+            </div>
 
             <div class="profile-info">
 
@@ -915,7 +1520,10 @@ function openProfile(name){
 
                 ${
                     p.ruName
-                    ? `<div class="profile-russian">${escapeHTML(p.ruName)}</div>`
+                    ?
+                    `<div class="profile-russian">
+                        ${escapeHTML(p.ruName)}
+                     </div>`
                     :""
                 }
 
@@ -924,61 +1532,159 @@ function openProfile(name){
                 </p>
 
                 <p>
-                    ${escapeHTML(p.description || "Нет описания.")}
+                    ${escapeHTML(
+                        p.description ||
+                        "Нет описания."
+                    )}
                 </p>
 
                 <div class="tags">
+
                     ${(p.tags||[]).map(t=>`
-                        <span class="tag">${escapeHTML(t)}</span>
+
+                        <span class="tag">
+                            ${escapeHTML(t)}
+                        </span>
+
                     `).join("")}
+
                 </div>
 
             </div>
+
         </div>
 
         <div class="section">
+
             <h3>Информация</h3>
-            <p>Дата / год: ${escapeHTML(p.debut || "—")}</p>
+
+            <p>
+                Дата / год:
+                ${escapeHTML(p.debut || "—")}
+            </p>
+
         </div>
 
         <div class="section">
+
             <h3>Сайты</h3>
+
             <div class="link-list">
+
                 ${
                     p.websites.length
-                    ? p.websites.map(url=>`
-                        <a href="${safeURL(url)}" target="_blank" rel="noopener">
+
+                    ?
+
+                    p.websites.map(url=>`
+
+                        <a href="${safeURL(url)}"
+                           target="_blank"
+                           rel="noopener">
+
                             ${escapeHTML(url)}
+
                         </a>
+
                     `).join("")
-                    : '<span style="color:#777">Сайтов нет</span>'
+
+                    :
+
+                    '<span style="color:#777">Сайтов нет</span>'
                 }
+
             </div>
+
         </div>
 
         <div class="section">
+
             <h3>Видео</h3>
+
             <div class="link-list">
+
                 ${
                     p.videos.length
-                    ? p.videos.map(url=>`
-                        <a href="${safeURL(url)}" target="_blank" rel="noopener">
+
+                    ?
+
+                    p.videos.map(url=>`
+
+                        <a href="${safeURL(url)}"
+                           target="_blank"
+                           rel="noopener">
+
                             ${escapeHTML(url)}
+
                         </a>
+
                     `).join("")
-                    : '<span style="color:#777">Видео нет</span>'
+
+                    :
+
+                    '<span style="color:#777">Видео нет</span>'
                 }
+
             </div>
+
         </div>
+
     `;
 
-    document.getElementById("profileModal").classList.add("show");
+    document.getElementById("profileModal")
+        .classList.add("show");
 }
 
+
+/* =========================
+   ПЕРЕКЛЮЧЕНИЕ ФОТО
+========================= */
+
+function changeProfilePhoto(index){
+
+    if(!currentProfileName)return;
+
+    const p=
+        normalizeProfile(
+            profiles[currentProfileName],
+            currentProfileName
+        );
+
+    const photo=p.photos[index];
+
+    if(!photo)return;
+
+    const main=
+        document.getElementById("profileMainPhoto");
+
+    if(main && main.tagName==="IMG"){
+        main.src=photo;
+    }
+
+    document.querySelectorAll(".profile-thumb")
+        .forEach((el,i)=>{
+            el.classList.toggle(
+                "active",
+                i===index
+            );
+        });
+}
+
+
+/* =========================
+   РЕДАКТИРОВАНИЕ
+========================= */
+
 function editCurrentProfile(){
+
     if(currentProfileName){
+
         closeModal("profileModal");
-        openProfileEditor(currentProfileName);
+
+        openProfileEditor(
+            currentProfileName
+        );
+
     }
 }
 
@@ -986,99 +1692,404 @@ function openProfileEditor(name=null){
 
     editingProfileName=name;
 
-    document.getElementById("profileEditorTitle").textContent =
-        name ? "✏️ Редактирование анкеты" : "➕ Новая анкета";
+    document.getElementById(
+        "profileEditorTitle"
+    ).textContent=
 
-    let p=name
-        ? normalizeProfile(profiles[name],name)
-        : defaultProfile("");
+        name
+        ? "✏️ Редактирование анкеты"
+        : "➕ Новая анкета";
 
-    document.getElementById("pName").value=p.name;
-    document.getElementById("pRuName").value=p.ruName;
-    document.getElementById("pCountry").value=p.country;
-    document.getElementById("pDebut").value=p.debut;
-    document.getElementById("pDescription").value=p.description;
-    document.getElementById("pTags").value=(p.tags||[]).join(", ");
-    document.getElementById("pWebsites").value=(p.websites||[]).join("\n");
-    document.getElementById("pVideos").value=(p.videos||[]).join("\n");
+    let p=
+        name
+
+        ?
+
+        normalizeProfile(
+            profiles[name],
+            name
+        )
+
+        :
+
+        defaultProfile("");
+
+    document.getElementById("pName").value=
+        p.name;
+
+    document.getElementById("pRuName").value=
+        p.ruName;
+
+    document.getElementById("pCountry").value=
+        p.country;
+
+    document.getElementById("pDebut").value=
+        p.debut;
+
+    document.getElementById("pDescription").value=
+        p.description;
+
+    document.getElementById("pTags").value=
+        (p.tags||[]).join(", ");
+
+    document.getElementById("pWebsites").value=
+        (p.websites||[]).join("\n");
+
+    document.getElementById("pVideos").value=
+        (p.videos||[]).join("\n");
+
     document.getElementById("pPhoto").value="";
 
-    const nameInput=document.getElementById("pName");
+    document.getElementById("quickSearchName").value=
+        p.name;
 
-    /*
-       Базовые карточки можно полностью редактировать,
-       но переименование отключено, чтобы не создавать
-       случайные дубликаты.
-    */
-    nameInput.readOnly=!!(name && baseNames.includes(name));
-    nameInput.style.opacity=nameInput.readOnly?".55":"1";
+    renderExistingPhotos(p.photos||[]);
 
-    document.getElementById("profileEditorModal").classList.add("show");
+    const nameInput=
+        document.getElementById("pName");
+
+    nameInput.readOnly=
+        !!(name && baseNames.includes(name));
+
+    nameInput.style.opacity=
+        nameInput.readOnly
+        ? ".55"
+        : "1";
+
+    document.getElementById(
+        "profileEditorModal"
+    ).classList.add("show");
 }
+
+
+/* =========================
+   ПРЕДПРОСМОТР ФОТО
+========================= */
+
+function renderExistingPhotos(photos){
+
+    const box=
+        document.getElementById(
+            "photoPreviewList"
+        );
+
+    if(!photos.length){
+
+        box.innerHTML=
+            '<span style="color:#666;font-size:12px">Фотографий пока нет</span>';
+
+        return;
+    }
+
+    box.innerHTML=
+        photos.map((photo,index)=>`
+
+            <img
+                class="photo-preview"
+                src="${photo}"
+                title="Фото ${index+1}"
+            >
+
+        `).join("");
+}
+
+function previewSelectedPhotos(){
+
+    const input=
+        document.getElementById("pPhoto");
+
+    const files=
+        Array.from(input.files || []);
+
+    const box=
+        document.getElementById(
+            "photoPreviewList"
+        );
+
+    if(!files.length)return;
+
+    box.innerHTML="";
+
+    files.forEach(file=>{
+
+        const reader=
+            new FileReader();
+
+        reader.onload=e=>{
+
+            const img=
+                document.createElement("img");
+
+            img.className=
+                "photo-preview";
+
+            img.src=
+                e.target.result;
+
+            box.appendChild(img);
+
+        };
+
+        reader.readAsDataURL(file);
+
+    });
+}
+
+
+/* =========================
+   БЫСТРЫЙ ПОИСК
+========================= */
+
+function syncQuickSearch(){
+
+    document.getElementById(
+        "quickSearchName"
+    ).value=
+
+        document.getElementById(
+            "pName"
+        ).value;
+}
+
+function getSearchName(){
+
+    return document.getElementById(
+        "quickSearchName"
+    ).value.trim();
+}
+
+function quickBrowserSearch(){
+
+    const name=getSearchName();
+
+    if(!name){
+
+        alert("Сначала укажи имя.");
+
+        return;
+    }
+
+    searchGoogle();
+}
+
+function searchGoogle(){
+
+    const name=getSearchName();
+
+    if(!name)return;
+
+    const query=
+        encodeURIComponent(
+            name + " official profile"
+        );
+
+    window.open(
+        "https://www.google.com/search?q="+query,
+        "_blank"
+    );
+}
+
+function searchBing(){
+
+    const name=getSearchName();
+
+    if(!name)return;
+
+    const query=
+        encodeURIComponent(
+            name + " official profile"
+        );
+
+    window.open(
+        "https://www.bing.com/search?q="+query,
+        "_blank"
+    );
+}
+
+function searchImages(){
+
+    const name=getSearchName();
+
+    if(!name)return;
+
+    const query=
+        encodeURIComponent(name);
+
+    window.open(
+        "https://www.google.com/search?tbm=isch&q="+query,
+        "_blank"
+    );
+}
+
+
+/* =========================
+   СОХРАНЕНИЕ ПРОФИЛЯ
+========================= */
 
 function saveProfile(){
 
-    const oldName=editingProfileName;
+    const oldName=
+        editingProfileName;
 
-    let name=document.getElementById("pName").value.trim();
-    const ruName=document.getElementById("pRuName").value.trim();
-    const country=document.getElementById("pCountry").value.trim();
-    const debut=document.getElementById("pDebut").value.trim();
-    const description=document.getElementById("pDescription").value.trim();
+    let name=
+        document.getElementById(
+            "pName"
+        ).value.trim();
+
+    const ruName=
+        document.getElementById(
+            "pRuName"
+        ).value.trim();
+
+    const country=
+        document.getElementById(
+            "pCountry"
+        ).value.trim();
+
+    const debut=
+        document.getElementById(
+            "pDebut"
+        ).value.trim();
+
+    const description=
+        document.getElementById(
+            "pDescription"
+        ).value.trim();
 
     if(!name){
-        alert("Укажи название анкеты.");
+
+        alert(
+            "Укажи название анкеты."
+        );
+
         return;
     }
 
-    if(oldName && baseNames.includes(oldName)){
+    if(oldName &&
+       baseNames.includes(oldName)){
+
         name=oldName;
     }
 
-    if(oldName && oldName!==name && profiles[name]){
-        alert("Анкета с таким названием уже существует.");
+    if(oldName &&
+       oldName!==name &&
+       profiles[name]){
+
+        alert(
+            "Анкета с таким названием уже существует."
+        );
+
         return;
     }
 
-    const old=oldName
-        ? normalizeProfile(profiles[oldName],oldName)
-        : defaultProfile(name);
+    const old=
+        oldName
 
-    const file=document.getElementById("pPhoto").files[0];
+        ?
 
-    const finish=(photo)=>{
+        normalizeProfile(
+            profiles[oldName],
+            oldName
+        )
+
+        :
+
+        defaultProfile(name);
+
+    const fileInput=
+        document.getElementById(
+            "pPhoto"
+        );
+
+    const files=
+        Array.from(
+            fileInput.files || []
+        );
+
+    const finish=(newPhotos)=>{
 
         const p={
+
             ...old,
+
             name:name,
+
             ruName:ruName,
+
             country:country,
+
             debut:debut,
+
             description:description,
-            tags:document.getElementById("pTags").value
+
+            tags:
+                document.getElementById(
+                    "pTags"
+                ).value
                 .split(",")
                 .map(x=>x.trim())
                 .filter(Boolean),
-            websites:document.getElementById("pWebsites").value
+
+            websites:
+                document.getElementById(
+                    "pWebsites"
+                ).value
                 .split("\n")
                 .map(x=>x.trim())
                 .filter(Boolean),
-            videos:document.getElementById("pVideos").value
+
+            videos:
+                document.getElementById(
+                    "pVideos"
+                ).value
                 .split("\n")
                 .map(x=>x.trim())
                 .filter(Boolean),
-            custom:!baseNames.includes(name) || old.custom
+
+            custom:
+                !baseNames.includes(name)
+                || old.custom
+
         };
 
-        if(photo!==null){
-            p.photo=photo;
+        if(newPhotos.length){
+
+            p.photos=[
+                ...(old.photos||[]),
+                ...newPhotos
+            ];
+
+        }else{
+
+            p.photos=
+                old.photos||[];
+
         }
 
-        if(oldName && oldName!==name){
+        p.photo=
+            p.photos[0]||"";
+
+        if(oldName &&
+           oldName!==name){
+
             delete profiles[oldName];
 
-            favorites=favorites.map(x=>x===oldName?name:x);
+            favorites=
+                favorites.map(
+                    x=>x===oldName
+                    ? name
+                    : x
+                );
+
+            blacklist=
+                blacklist.map(
+                    x=>x===oldName
+                    ? name
+                    : x
+                );
+
             saveFavorites();
+            saveBlacklist();
         }
 
         profiles[name]=p;
@@ -1087,26 +2098,55 @@ function saveProfile(){
 
         editingProfileName=null;
 
-        closeModal("profileEditorModal");
+        closeModal(
+            "profileEditorModal"
+        );
 
         render();
 
         if(currentProfileName===oldName){
+
             currentProfileName=name;
+
         }
+
     };
 
-    if(file){
-        const reader=new FileReader();
+    if(!files.length){
+
+        finish([]);
+
+        return;
+    }
+
+    const newPhotos=[];
+
+    let loaded=0;
+
+    files.forEach(file=>{
+
+        const reader=
+            new FileReader();
 
         reader.onload=e=>{
-            finish(e.target.result);
+
+            newPhotos.push(
+                e.target.result
+            );
+
+            loaded++;
+
+            if(loaded===files.length){
+
+                finish(newPhotos);
+
+            }
+
         };
 
         reader.readAsDataURL(file);
-    }else{
-        finish(old.photo || "");
-    }
+
+    });
 }
 
 
@@ -1115,6 +2155,7 @@ function saveProfile(){
 ========================= */
 
 const defaultDictionary=[
+
     {
         q:"привет",
         a:"Привет! Рад тебя видеть 😊",
@@ -1123,6 +2164,7 @@ const defaultDictionary=[
             "Привет 😊 Как проходит день?"
         ]
     },
+
     {
         q:"как дела",
         a:"Всё хорошо 😊 А у тебя как?",
@@ -1131,6 +2173,7 @@ const defaultDictionary=[
             "Всё спокойно. Рассказывай, как ты."
         ]
     },
+
     {
         q:"что делаешь",
         a:"Общаюсь с тобой и отдыхаю.",
@@ -1139,6 +2182,7 @@ const defaultDictionary=[
             "Сижу, общаюсь и думаю, чем заняться."
         ]
     },
+
     {
         q:"как настроение",
         a:"Настроение хорошее 😊",
@@ -1147,6 +2191,7 @@ const defaultDictionary=[
             "В целом хорошо. А у тебя?"
         ]
     },
+
     {
         q:"спасибо",
         a:"Пожалуйста 😊",
@@ -1155,6 +2200,7 @@ const defaultDictionary=[
             "Всегда пожалуйста."
         ]
     },
+
     {
         q:"пока",
         a:"Пока! Ещё увидимся 👋",
@@ -1162,188 +2208,46 @@ const defaultDictionary=[
             "До встречи!",
             "Хорошего тебе дня!"
         ]
-    },
-    {
-        q:"скучно",
-        a:"Давай что-нибудь придумаем. Можно поговорить, поиграть или обсудить фильм.",
-        variants:[
-            "Тогда надо срочно найти занятие 😄",
-            "Можем просто поболтать."
-        ]
-    },
-    {
-        q:"игра",
-        a:"Во что сейчас играешь?",
-        variants:[
-            "Какая игра тебе сейчас больше всего нравится?",
-            "Могу обсудить GTA, Minecraft и другие игры."
-        ]
-    },
-    {
-        q:"майнкрафт",
-        a:"Minecraft всегда подходит для спокойного вечера 😄",
-        variants:[
-            "А что сейчас строишь?",
-            "Выживание или строительство?"
-        ]
-    },
-    {
-        q:"gta",
-        a:"GTA — хороший вариант, если хочется покататься или заняться чем-нибудь в городе.",
-        variants:[
-            "Ты больше любишь RP или обычный GTA?",
-            "А чем сейчас занимаешься в GTA?"
-        ]
-    },
-    {
-        q:"музыка",
-        a:"Какую музыку обычно слушаешь?",
-        variants:[
-            "Есть сейчас песня, которую часто включаешь?",
-            "Музыка очень хорошо меняет настроение."
-        ]
-    },
-    {
-        q:"фильм",
-        a:"Что-нибудь интересное недавно смотрел?",
-        variants:[
-            "Какой фильм можешь посоветовать?",
-            "Я бы сейчас выбрал что-нибудь атмосферное."
-        ]
-    },
-    {
-        q:"работа",
-        a:"Как прошёл рабочий день?",
-        variants:[
-            "Работа сильно утомила сегодня?",
-            "После работы иногда лучше просто отдохнуть."
-        ]
-    },
-    {
-        q:"еда",
-        a:"Что сегодня ел?",
-        variants:[
-            "Есть любимое блюдо?",
-            "Иногда хорошая еда — уже отличный план на день."
-        ]
-    },
-    {
-        q:"сон",
-        a:"Нормально выспался?",
-        variants:[
-            "Сон сильно влияет на настроение.",
-            "Может, пора немного отдохнуть?"
-        ]
-    },
-    {
-        q:"любовь",
-        a:"Любовь — довольно большая тема. Для меня важны уважение, доверие и честность.",
-        variants:[
-            "В отношениях особенно важны доверие и взаимное уважение.",
-            "Главное — чтобы обоим было спокойно и комфортно."
-        ]
-    },
-    {
-        q:"отношения",
-        a:"В отношениях важно говорить друг с другом открыто и уважать личные границы.",
-        variants:[
-            "Мне кажется, доверие здесь очень важно.",
-            "Хорошие отношения строятся на взаимном уважении."
-        ]
-    },
-    {
-        q:"границы",
-        a:"Личные границы важны. Если человеку что-то некомфортно, это стоит уважать.",
-        variants:[
-            "Согласие и комфорт должны быть взаимными.",
-            "О своих границах лучше говорить прямо и спокойно."
-        ]
-    },
-    {
-        q:"путешествие",
-        a:"Куда-нибудь давно хотелось съездить?",
-        variants:[
-            "Какое место ты хотел бы увидеть?",
-            "Путешествия хорошо меняют обстановку."
-        ]
-    },
-    {
-        q:"погода",
-        a:"Какая у тебя сегодня погода?",
-        variants:[
-            "Уютная погода — отличный повод остаться дома.",
-            "Погода сильно влияет на желание куда-нибудь идти."
-        ]
-    },
-    {
-        q:"книга",
-        a:"Читаешь сейчас что-нибудь?",
-        variants:[
-            "Есть книга, которую можешь посоветовать?",
-            "Иногда хороший вечер с книгой лучше всего."
-        ]
-    },
-    {
-        q:"компьютер",
-        a:"Что сейчас делаешь на компьютере?",
-        variants:[
-            "Игры, работа или что-то программируешь?",
-            "Компьютер — универсальная штука 😄"
-        ]
-    },
-    {
-        q:"программирование",
-        a:"Какой проект сейчас делаешь?",
-        variants:[
-            "Люблю, когда из идеи постепенно получается работающий проект.",
-            "Главное — не бояться экспериментировать."
-        ]
-    },
-    {
-        q:"будущее",
-        a:"О будущем интересно думать, но иногда лучше сосредоточиться на ближайших шагах.",
-        variants:[
-            "Есть планы на ближайшее время?",
-            "Маленькие планы тоже могут постепенно привести к большой цели."
-        ]
-    },
-    {
-        q:"доброе утро",
-        a:"Доброе утро ☀️ Хорошего начала дня!",
-        variants:[
-            "Доброе утро! Выспался?",
-            "Утро начинается 😊 Какие планы?"
-        ]
-    },
-    {
-        q:"добрый вечер",
-        a:"Добрый вечер 🌙 Как прошёл день?",
-        variants:[
-            "Добрый вечер! Как настроение?",
-            "Хорошего спокойного вечера 😊"
-        ]
     }
+
 ];
 
 if(!dictionary.length){
-    dictionary=defaultDictionary;
+
+    dictionary=
+        defaultDictionary;
+
     saveDictionary();
+
 }
 
 function saveDictionary(){
-    localStorage.setItem("adultstars_dictionary",JSON.stringify(dictionary));
+
+    localStorage.setItem(
+        "adultstars_dictionary",
+        JSON.stringify(dictionary)
+    );
+
 }
 
 function renderDictionary(){
 
-    const box=document.getElementById("dictionaryList");
+    const box=
+        document.getElementById(
+            "dictionaryList"
+        );
 
     if(!dictionary.length){
-        box.innerHTML='<div class="empty">Словарь пуст. Добавь первую фразу.</div>';
+
+        box.innerHTML=
+            '<div class="empty">Словарь пуст.</div>';
+
         return;
     }
 
-    box.innerHTML=dictionary.map((item,index)=>`
+    box.innerHTML=
+        dictionary.map((item,index)=>`
+
         <div class="dictionary-item">
 
             <strong>Пользователь:</strong>
@@ -1354,100 +2258,161 @@ function renderDictionary(){
                 ${escapeHTML(item.a)}
             </small>
 
-            ${
-                item.variants && item.variants.length
-                ? `<small>
-                    <strong>Варианты:</strong>
-                    ${item.variants.map(escapeHTML).join(" • ")}
-                   </small>`
-                :""
-            }
-
             <div class="dictionary-actions">
-                <button class="orange-btn" onclick="openDictionaryEditor(${index})">
+
+                <button
+                    class="orange-btn"
+                    onclick="openDictionaryEditor(${index})">
                     ✏️ Изменить
                 </button>
 
-                <button class="dark-btn" onclick="deleteDictionaryItem(${index})">
+                <button
+                    class="dark-btn"
+                    onclick="deleteDictionaryItem(${index})">
                     🗑️ Удалить
                 </button>
+
             </div>
 
         </div>
+
     `).join("");
+
 }
 
 function openDictionaryEditor(index=null){
 
     editingDictionaryIndex=index;
 
-    document.getElementById("dictionaryEditorTitle").textContent =
-        index===null ? "➕ Новая фраза" : "✏️ Редактирование фразы";
+    document.getElementById(
+        "dictionaryEditorTitle"
+    ).textContent=
 
-    const item=index===null
-        ? {q:"",a:"",variants:[]}
-        : dictionary[index];
+        index===null
+        ? "➕ Новая фраза"
+        : "✏️ Редактирование фразы";
 
-    document.getElementById("dictQuestion").value=item.q || "";
-    document.getElementById("dictAnswer").value=item.a || "";
-    document.getElementById("dictVariants").value=
+    const item=
+        index===null
+
+        ?
+
+        {q:"",a:"",variants:[]}
+
+        :
+
+        dictionary[index];
+
+    document.getElementById(
+        "dictQuestion"
+    ).value=item.q||"";
+
+    document.getElementById(
+        "dictAnswer"
+    ).value=item.a||"";
+
+    document.getElementById(
+        "dictVariants"
+    ).value=
         (item.variants||[]).join("\n");
 
-    document.getElementById("dictionaryEditorModal").classList.add("show");
+    document.getElementById(
+        "dictionaryEditorModal"
+    ).classList.add("show");
+
 }
 
 function saveDictionaryItem(){
 
-    const q=document.getElementById("dictQuestion").value.trim();
-    const a=document.getElementById("dictAnswer").value.trim();
+    const q=
+        document.getElementById(
+            "dictQuestion"
+        ).value.trim();
+
+    const a=
+        document.getElementById(
+            "dictAnswer"
+        ).value.trim();
 
     if(!q || !a){
-        alert("Заполни фразу пользователя и ответ.");
+
+        alert(
+            "Заполни фразу пользователя и ответ."
+        );
+
         return;
     }
 
     const item={
+
         q:q.toLowerCase(),
+
         a:a,
-        variants:document.getElementById("dictVariants").value
+
+        variants:
+            document.getElementById(
+                "dictVariants"
+            ).value
             .split("\n")
             .map(x=>x.trim())
             .filter(Boolean)
+
     };
 
     if(editingDictionaryIndex===null){
+
         dictionary.push(item);
+
     }else{
-        dictionary[editingDictionaryIndex]=item;
+
+        dictionary[
+            editingDictionaryIndex
+        ]=item;
+
     }
 
     saveDictionary();
+
     renderDictionary();
 
-    closeModal("dictionaryEditorModal");
+    closeModal(
+        "dictionaryEditorModal"
+    );
 
     editingDictionaryIndex=null;
 }
 
 function deleteDictionaryItem(index){
 
-    if(!confirm("Удалить эту фразу из словаря?"))return;
+    if(!confirm(
+        "Удалить эту фразу?"
+    ))return;
 
-    dictionary.splice(index,1);
+    dictionary.splice(
+        index,
+        1
+    );
 
     saveDictionary();
+
     renderDictionary();
 }
 
 function resetDictionary(){
 
-    if(!confirm("Восстановить встроенный словарь? Твои добавленные фразы будут заменены.")){
-        return;
-    }
+    if(!confirm(
+        "Восстановить встроенный словарь?"
+    ))return;
 
-    dictionary=JSON.parse(JSON.stringify(defaultDictionary));
+    dictionary=
+        JSON.parse(
+            JSON.stringify(
+                defaultDictionary
+            )
+        );
 
     saveDictionary();
+
     renderDictionary();
 }
 
@@ -1458,20 +2423,32 @@ function resetDictionary(){
 
 function sendMessage(){
 
-    const input=document.getElementById("chatInput");
-    const text=input.value.trim();
+    const input=
+        document.getElementById(
+            "chatInput"
+        );
+
+    const text=
+        input.value.trim();
 
     if(!text)return;
 
-    addChatMessage("user",text);
+    addChatMessage(
+        "user",
+        text
+    );
 
     input.value="";
 
     setTimeout(()=>{
 
-        const reply=generateChatReply(text);
+        const reply=
+            generateChatReply(text);
 
-        addChatMessage("bot",reply);
+        addChatMessage(
+            "bot",
+            reply
+        );
 
         saveChat();
 
@@ -1480,108 +2457,173 @@ function sendMessage(){
 
 function generateChatReply(text){
 
-    const lower=text.toLowerCase();
+    const lower=
+        text.toLowerCase();
 
-    /*
-       Сначала проверяем пользовательский словарь.
-       Чем длиннее совпавшая фраза, тем выше приоритет.
-    */
-
-    const sorted=[...dictionary]
-        .sort((a,b)=>(b.q||"").length-(a.q||"").length);
+    const sorted=
+        [...dictionary]
+        .sort(
+            (a,b)=>
+                (b.q||"").length-
+                (a.q||"").length
+        );
 
     for(const item of sorted){
 
-        if(lower.includes(item.q.toLowerCase())){
+        if(
+            lower.includes(
+                item.q.toLowerCase()
+            )
+        ){
 
             const answers=[
+
                 item.a,
+
                 ...(item.variants||[])
+
             ].filter(Boolean);
 
             if(answers.length){
-                return answers[Math.floor(Math.random()*answers.length)];
+
+                return answers[
+                    Math.floor(
+                        Math.random()*
+                        answers.length
+                    )
+                ];
+
             }
+
         }
+
     }
 
-    /*
-       Если подходящей фразы нет —
-       используем общий нейтральный ответ.
-    */
-
     const generic=[
+
         "Интересно 😊 Расскажи подробнее.",
+
         "Понял тебя. А что ты сам об этом думаешь?",
+
         "Хорошо 😊 Продолжай.",
+
         "Звучит интересно.",
+
         "Можешь рассказать об этом чуть подробнее?",
-        "А какие у тебя планы на сегодня?",
+
         "Понимаю тебя.",
+
         "Интересная тема. Давай обсудим.",
+
         "Хорошо, я тебя слушаю.",
+
         "И что было дальше?",
+
         "А тебе самому это нравится?",
+
         "Расскажи немного больше.",
+
         "Хм, интересно 🤔",
+
         "Понял. А как ты к этому относишься?",
-        "Можно поговорить об этом спокойно.",
-        "Хороший вопрос.",
-        "Давай разберёмся вместе."
+
+        "Хороший вопрос."
+
     ];
 
-    return generic[Math.floor(Math.random()*generic.length)];
+    return generic[
+        Math.floor(
+            Math.random()*
+            generic.length
+        )
+    ];
 }
 
 function addChatMessage(type,text){
 
-    const win=document.getElementById("chatWindow");
+    const win=
+        document.getElementById(
+            "chatWindow"
+        );
 
-    const div=document.createElement("div");
+    const div=
+        document.createElement(
+            "div"
+        );
 
-    div.className="message "+type;
+    div.className=
+        "message "+type;
+
     div.textContent=text;
 
     win.appendChild(div);
 
-    win.scrollTop=win.scrollHeight;
+    win.scrollTop=
+        win.scrollHeight;
 }
 
 function saveChat(){
 
     const messages=[
-        ...document.querySelectorAll("#chatWindow .message")
+
+        ...document.querySelectorAll(
+            "#chatWindow .message"
+        )
+
     ].map(x=>({
-        type:x.classList.contains("user")?"user":"bot",
+
+        type:
+            x.classList.contains("user")
+            ? "user"
+            : "bot",
+
         text:x.textContent
+
     }));
 
-    localStorage.setItem("adultstars_chat",JSON.stringify(messages));
+    localStorage.setItem(
+        "adultstars_chat",
+        JSON.stringify(messages)
+    );
 }
 
 function loadChat(){
 
-    const win=document.getElementById("chatWindow");
+    const win=
+        document.getElementById(
+            "chatWindow"
+        );
 
-    if(win.dataset.loaded==="1")return;
+    if(
+        win.dataset.loaded==="1"
+    )return;
 
     win.dataset.loaded="1";
 
-    const messages=JSON.parse(
-        localStorage.getItem("adultstars_chat") || "[]"
-    );
+    const messages=
+        JSON.parse(
+            localStorage.getItem(
+                "adultstars_chat"
+            ) || "[]"
+        );
 
     if(!messages.length){
 
         addChatMessage(
             "bot",
-            "Привет! 💬 Я чат AdultStars. Можешь добавить свои фразы в разделе «📖 Словарь»."
+            "Привет! 💬 Я чат AdultStars."
         );
 
         return;
     }
 
-    messages.forEach(m=>addChatMessage(m.type,m.text));
+    messages.forEach(
+        m=>
+            addChatMessage(
+                m.type,
+                m.text
+            )
+    );
 }
 
 
@@ -1590,30 +2632,46 @@ function loadChat(){
 ========================= */
 
 function closeModal(id){
-    document.getElementById(id).classList.remove("show");
+
+    document.getElementById(
+        id
+    ).classList.remove("show");
+
 }
 
 function escapeHTML(value){
+
     return String(value ?? "")
         .replaceAll("&","&amp;")
         .replaceAll("<","&lt;")
         .replaceAll(">","&gt;")
         .replaceAll('"',"&quot;")
         .replaceAll("'","&#039;");
+
 }
 
 function escapeAttr(value){
+
     return String(value ?? "")
         .replaceAll("\\","\\\\")
         .replaceAll("'","\\'");
+
 }
 
 function safeURL(url){
 
-    const value=String(url||"").trim();
+    const value=
+        String(url||"").trim();
 
-    if(/^https?:\/\//i.test(value)){
-        return value.replaceAll('"',"");
+    if(
+        /^https?:\/\//i.test(value)
+    ){
+
+        return value.replaceAll(
+            '"',
+            ""
+        );
+
     }
 
     return "#";
@@ -1625,6 +2683,8 @@ function safeURL(url){
 ========================= */
 
 render();
+
+updateBlacklistCount();
 
 </script>
 
